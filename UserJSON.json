@@ -1,0 +1,59 @@
+{
+	"userID": 1,
+	"firstName": "bob",
+	"lastName": "Smith",
+	"dob": "01/02/1990",
+	"medications": [
+	
+	{
+		"name": "Tylenol",
+		"filledDate": "03/02/16",
+		"pickUpDate": "03/05/16",
+		"dose": "200 mg",
+		"refills": 2,
+		"schedule": {
+			"unitPerDose": 2,
+			"timesForDose": ["MO04", "TU04", "WE04", "TH04", "FR04", "SA04", "SU04"],
+			"meal": "Before"
+		},
+		"noncompliances": 
+		[
+		
+		{
+			"timestamps": ["03/02/2016 3: 00: 00", "03/03/2016 6: 00: 00", "03/04/2016 12: 00: 00"]
+		}, 
+		
+		{
+			"timestamps": ["03/05/2016 12: 00: 00", "03/06/2016 3: 00: 00", "03/07/2016 6: 00: 00"]
+		}
+		
+		]
+	},
+	
+	{
+		"name": "Benadryl",
+		"filledDate": "03/07/16",
+		"pickUpDate": "03/09/16",
+		"dose": "100 mg",
+		"refills": 3,
+		"schedule": {
+			"unitPerDose": 3,
+			"timesForDose": ["MO11", "TU12", "WE13", "TH23", "FR24", "SA10", "SU06"],
+			"meal": "After"
+		},
+		"noncompliances": 
+		[
+		
+		{
+			"timestamps": ["03/08/2016 3: 00: 00", "03/09/2016 6: 00: 00", "03/10/2016 12: 00: 00"]
+		}, 
+		
+		{
+			"timestamps": ["03/11/2016 12: 00: 00", "03/12/2016 3: 00: 00", "03/13/2016 6: 00: 00"]
+		}
+		
+		]
+	}
+	
+	]
+}

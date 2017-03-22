@@ -1,0 +1,241 @@
+<!DOCTYPE=html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="./js/jquery-2.1.4.min.js"></script>
+		<link rel="stylesheet" href="./js/themes/basic.css">
+		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
+		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
+		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+		<script src="./cordova.js"></script>
+		
+	
+		<script>
+			$(document).ready(function(){
+				//get user information json
+				var userJSON;
+				$.getJSON('UserJSON.json', function(user) {
+					userJSON = user;
+				});
+				
+				//handle button clicks for takeMedicationPage
+				//took medication
+				$("#compliance").on("tap", function(){
+					alert("Thank you.");
+				});
+				
+				//did not take medication
+				$("#noncompliance").on("tap", function(){
+					alert("You did not comply.");
+				});
+				
+				//remind me in an hour
+				$("#later").on("tap", function(){
+					alert("I will remind you in an hour.");
+				});
+				
+				//setup medication page
+				$(document).on("pagebeforeshow", "#medicationPage", function(){
+					$("#medications").empty();
+					var medicationsArray = userJSON.medications;
+					$.each(medicationsArray, function(key, value){
+						var medicationName = value.name;
+						var filledDate = value.filledDate;
+						var pickUpDate = value.pickUpDate;
+						var dose = value.dose;
+						var refills = value.refills;
+						var meal = value.schedule.meal;
+						var unitsToTake = value.schedule.unitPerDose;
+						var timesToTake = value.schedule.timesForDose;
+						
+						$("#medications").append("<p>Medication: " + medicationName + "</p>");
+						$("#medications").append("<p>Filled: " + filledDate + "</p>");
+						$("#medications").append("<p>Picked Up: " + pickUpDate + "</p>");
+						$("#medications").append("<p>Dose: " + dose + "</p>");
+						$("#medications").append("<p>Refills: " + refills + "</p>");
+						$("#medications").append("<p>Take: " + unitsToTake + " " + meal + " meal</p>");
+						
+						var schedule = "";
+						$.each(timesToTake, function(key, weekdayTimeCode){
+							var weekdayTime = getWeekdayTime(weekdayTimeCode);	//two letter code for day of the week(ex. MO)
+							if(key == 0)
+							{
+								schedule += weekdayTime;
+							}
+							else
+							{
+								schedule += ", " + weekdayTime;
+							}
+						});
+						$("#medications").append("<p>Schedule: " + schedule + "</p>");
+						$("#medications").append("</br>");
+					});
+				});
+
+				//when device ready set up local notifications
+				document.addEventListener('deviceready', function () {
+					//set noncompliance array to null in local storage
+					localStorage.setItem("noncompliances", "");	//DEBUGGING
+				
+					//set action handlers for notification actions when device ready
+					setActionHandlers();
+
+					$("#testNotification").on("click", function(){
+						cordova.plugins.notification.local.hasPermission(function (granted) {	
+							if(granted)	//if we have permission, then set up notifications
+							{
+								cancelAllNotifications();
+								testNotification();
+							}
+							else	//else, ask for permission
+							{
+								cordova.plugins.notification.local.registerPermission(function (granted) {
+									if(granted)	//if user gives us permission set up notifications
+									{
+										cancelAllNotifications();
+										testNotification();
+									}
+									else	//else, inform user they must give us access to notifications
+									{
+										alert("You must give Local-Notification permission for this app to function properly.");
+									}
+								});
+							}
+						});
+					});
+				}, false);
+				
+				
+				//set event handlers for buttons
+				function setActionHandlers()
+				{
+					cordova.plugins.notification.local.on("click", function (notification) {
+						//setup takeMedicationPage
+						$("#medicationInfo").empty();
+						$("#medicationInfo").append("<center><p>Take Tylenol</p></center>");
+						$("#medicationInfo").append("<center><p>2 200mg doses</p></center>");
+						$.mobile.changePage("#takeMedicationPage");
+					});
+				}
+				
+				//cancel all notifications
+				function cancelAllNotifications()
+				{
+					cordova.plugins.notification.local.cancelAll(function() {
+					}, this);
+				}
+				
+				//set local notification. Needs modified so it sets local notification based off of JSON
+				function testNotification()
+				{
+					var now = new Date().getTime(),
+                    oneSec = new Date(now + 1 * 1000);
+					
+					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+					cordova.plugins.notification.local.schedule({
+						id: 1,
+						title: 'Tylenol',
+						text: 'Take 2 x 200 mg doses',
+						at: oneSec,
+						every: 1,
+						sound: sound
+					});
+
+				}
+				
+				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
+				function getWeekdayTime(weekdayTimeCode)
+				{
+					//convert weekdayCode into actual weekday(ex MO -> Monday)
+					var weekdayCode = weekdayTimeCode.substring(0,2);
+					switch(weekdayCode){
+						case "MO": 
+							weekdayCode = "Monday";
+							break;
+						case "TU": 
+							weekdayCode = "Tuesday";
+							break;
+						case "WE": 
+							weekdayCode = "Wednesday";
+							break;
+						case "TH": 
+							weekdayCode = "Thursday";
+							break;
+						case "FR": 
+							weekdayCode = "Friday";
+							break;
+						case "SA": 
+							weekdayCode = "Saturday";
+							break;
+						case "SU": 
+							weekdayCode = "Sunday";
+							break;	
+					}
+					
+					//convert timeCode into actual time(ex. 04 -> 4:00 AM)
+					var timeCode = weekdayTimeCode.substring(2,4);
+					if(timeCode < 10)
+					{
+						timeCode = timeCode.substring(1,2) + ":00 AM";
+					}
+					else if(timeCode < 12)
+					{
+						timeCode = timeCode + ":00 AM";
+					}
+					else if(timeCode == 12)
+					{
+						timeCode = timeCode + ":00 PM";
+					}
+					else if(timeCode < 24)
+					{
+						timeCode = timeCode-12 + ":00 PM"
+					}
+					else if(timeCode == 24)
+					{
+						timeCode = timeCode-12 + ":00 AM"
+					}
+					
+					//combine weekday and time(ex. Monday + 4:00 AM -> Monday 4:00 AM)
+					var weekdayTime = weekdayCode + " " + timeCode;
+					return weekdayTime;
+				}
+			});
+		</script>
+	</head>
+	
+	<body>		
+	
+		<!-- Homepage -->
+		<div data-role="page" id="homepage" data-title="Homepage">
+			<div data-role="header">
+				<h1>PharmacyPro</h1>
+			</div>
+			<button data-role="button" id="testNotification">Local-Notification Test</button>
+			<a data-role="button" id="viewMedications" href="#medicationPage">View Medications</a>
+		</div>
+		
+		<!-- Medication Information -->
+		<div data-role="page" id="medicationPage" data-title="Medication Page">
+			<div data-role="header">
+				<a id="btnBack" href="#homepage">Back</a>
+				<h1>Medications</h1>
+			</div>
+			<div id="medications" data-role="main" class="ui-body-a"></div>
+		</div>
+		
+		<!-- Take Medication Page -->
+		<div data-role="page" id="takeMedicationPage" data-title="Take Medication Page">
+			<div data-role="header">
+				<h1>Take Medication</h1>
+			</div>
+			<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
+			</br>
+			<div class="ui-grid-b my-breakpoint">
+				<div class="ui-block-a charBlock"><button data-role="button" id="compliance">Yes</button></div>
+				<div class="ui-block-b charBlock"><button data-role="button" id="noncompliance">No</button></div>
+				<div class="ui-block-c charBlock"><button data-role="button" id="later">In an Hour</button></div>
+			</div>
+		</div>
+		
+	</body>
+</html>
