@@ -24,6 +24,6 @@ ToDo:
 	-Send non-compliance notifications to provider and pharmacy(this will just be adding non-compliance to json)
 	-Give users the ability to manually add/remove medications (no updates)
 		-add medication to JSON
-	-Display surveys (survey questions will be provided)
+	-Display surveys (survey questions will be provided) - Adam
 		-not sure about this
 	-Beautify the UI
