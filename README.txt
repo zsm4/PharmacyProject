@@ -17,6 +17,7 @@ Task Board
 Done:
 	-Display medication list and schedule for each medication
 	
+	
 ToDo:
 	-Receive updates through a web service (every 1 min check json for new medications) ---- <b>Elias</b>
 	-Keep track of non-compliances(save non-compliances in local memory and when there are 3 add to json) ---- <b>Zach</b>
