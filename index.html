@@ -12,11 +12,27 @@
 	
 		<script>
 			$(document).ready(function(){
-				//get user information json
+				//must keep track of current index for notification id's
+				var currentPostponeNotificationID;
+				
+				//must keep track of our notifications so we can close them
+				var notificationIdList;
+				
+				//if JSON is not in local storage, bring it into local storage from json file
+				//currently resetting json everytime for debugging
 				var userJSON;
-				$.getJSON('UserJSON.json', function(user) {
-					userJSON = user;
-				});
+				if(!localStorage.getItem("userJSON"))
+				{
+					$.getJSON("UserJSON.json", function(data){
+						localStorage.setItem("userJSON", JSON.stringify(data));
+						userJSON = data;
+					});
+				}
+				else
+				{
+					userJSON = JSON.parse(localStorage.getItem("userJSON"));
+				}
+				viewUserJSON();	//debugging
 				
 				//handle button clicks for takeMedicationPage
 				//took medication
@@ -26,12 +42,77 @@
 				
 				//did not take medication
 				$("#noncompliance").on("tap", function(){
-					alert("You did not comply.");
+					//if we have a noncompliance array in local storage then add the noncompliance, otherwise create an array with the noncompliance and add it to local storage
+						var noncomplianceDate = new Date();
+						var medication = $("#medication").text();	//get medication name
+						
+						if(JSON.parse(localStorage.getItem("noncomplianceArr" + medication)))	//if we already have a noncompliance array in local storage
+						{
+							var noncomplianceArr = JSON.parse(localStorage.getItem("noncomplianceArr" + medication));	//get noncompliance array from local storage
+							noncomplianceArr.push(noncomplianceDate);	//add noncompliance date
+							
+							if(noncomplianceArr.length > 2)	//if there are 3 noncompliances
+							{
+								//write noncompliance to json (THIS IS WHERE YOU WOULD POST TO THE API)
+								localStorage.setItem("noncomplianceArr" + medication, null);	//set noncompliance array to null in local storage
+								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your insurance company and Pharmacist.");	//alert user they have not complied 3 times
+								
+								//search and find correct medication in json, then push the noncompliance array to it and save to local storage
+								var index;
+								$.each(userJSON.medications, function(index, value){
+									if(value.name === medication)
+									{
+										value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
+										localStorage.setItem("userJSON", JSON.stringify(userJSON));
+										viewUserJSON();
+									}
+								});
+								
+							}
+							else
+							{
+								localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));
+								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
+							}
+						}
+						else	//if we do not have a noncompliance array in local storage
+						{
+							var noncomplianceArr = [];	//create noncompliance array
+							noncomplianceArr.push(noncomplianceDate);	//add noncompliance date
+							localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));	//write to local storage
+							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
+						}
+						
 				});
 				
 				//remind me in an hour
 				$("#later").on("tap", function(){
 					alert("I will remind you in an hour.");
+					var now = new Date();
+					var medication = $("#medication").text();	//get medication name
+					var medicationText = $("#medicationText").text();
+					
+					if(!currentPostponeNotificationID)
+					{
+						currentPostponeNotificationID = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
+					}
+					
+					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
+					
+					alert(now);
+					alert(oneHour);
+					
+					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+					cordova.plugins.notification.local.schedule({
+						id: currentPostponeNotificationID,
+						title: medication,
+						text: medicationText + " again",
+						at: oneHour,
+						every: 1,
+						sound: sound
+					});
+					
+					currentNotificationID++;	//increase our current notificationID
 				});
 				
 				//setup medication page
@@ -74,9 +155,6 @@
 
 				//when device ready set up local notifications
 				document.addEventListener('deviceready', function () {
-					//set noncompliance array to null in local storage
-					localStorage.setItem("noncompliances", "");	//DEBUGGING
-				
 					//set action handlers for notification actions when device ready
 					setActionHandlers();
 
@@ -112,8 +190,8 @@
 					cordova.plugins.notification.local.on("click", function (notification) {
 						//setup takeMedicationPage
 						$("#medicationInfo").empty();
-						$("#medicationInfo").append("<center><p>Take Tylenol</p></center>");
-						$("#medicationInfo").append("<center><p>2 200mg doses</p></center>");
+						$("#medicationInfo").append("<center><p id='medication'>" + notification.title + "</p></center>");
+						$("#medicationInfo").append("<center><p id='medicationText'>" + notification.text + "</p></center>");
 						$.mobile.changePage("#takeMedicationPage");
 					});
 				}
@@ -128,19 +206,44 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-					var now = new Date().getTime(),
-                    oneSec = new Date(now + 1 * 1000);
-					
+					var userJSON = $.getJSON("./UserJSON", function(data){
+						alert(data.firstName);
+					}); 
+				
+					if(!notificationIdList)
+					{
+						notificationIdList = [];
+					}
+				
+					var now = new Date();
+                    fiveSec = new Date(now + 5 * 1000);
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+					
+					var idIndex = 1;
+					
 					cordova.plugins.notification.local.schedule({
-						id: 1,
+						id: idIndex,
 						title: 'Tylenol',
 						text: 'Take 2 x 200 mg doses',
-						at: oneSec,
+						at: fiveSec,
 						every: 1,
 						sound: sound
 					});
-
+					
+					notificationIdList.push(idIndex);
+					idIndex++;
+					
+					cordova.plugins.notification.local.schedule({
+						id: idIndex,
+						title: 'Benadryl',
+						text: 'Take 3 x 100 mg doses',
+						at: fiveSec,
+						every: 1,
+						sound: sound
+					});
+					
+					notificationIdList.push(idIndex);
+					idIndex++;
 				}
 				
 				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
@@ -198,6 +301,12 @@
 					//combine weekday and time(ex. Monday + 4:00 AM -> Monday 4:00 AM)
 					var weekdayTime = weekdayCode + " " + timeCode;
 					return weekdayTime;
+				}
+				
+				function viewUserJSON(){
+					//search and find correct medication in json
+					var userJSONString = localStorage.getItem("userJSON");
+					alert(userJSONString);
 				}
 			});
 		</script>
