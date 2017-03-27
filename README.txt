@@ -24,7 +24,7 @@ ToDo:
 		-background process
 	-Send non-compliance notifications to provider and pharmacy ---- Zach
 		-Ask Dimitri about this. Seems server side.
-	-Give users the ability to manually add/remove medications (no updates) ---- Sascha
+	-Give users the ability to manually add/remove medications ---- Sascha
 		-add/remove medications to JSON
 	-Display surveys (survey questions will be provided) ---- Adam
 		-Ask Dimitri if you have questions about this
