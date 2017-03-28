@@ -3,10 +3,10 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="./js/jquery-2.1.4.min.js"></script>
-		<link rel="stylesheet" href="./js/themes/basic.css">
-		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
-		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
+		<link rel="stylesheet" href="./nativeDroid2/css/nativedroid2.css">
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./cordova.js"></script>
 		
 	
@@ -206,13 +206,15 @@
 	<body>		
 	
 		<!-- Homepage -->
-		<div data-role="page" id="homepage" data-title="Homepage">
+		<div data-role="page" id="homepage" data-title="Homepage" data-wow-delay="0.2s">
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
-			<button data-role="button" id="testNotification">Local-Notification Test</button>
-			<a data-role="button" id="viewMedications" href="#medicationPage">View Medications</a>
-            <a data-role="button" id="addMedication" href="#addMedPage">Add New Medication</a>
+			<p style="text-align:center">
+			<a id="testNotification" href="#" class ="ui-btn ui-btn-raised" style="width:90%;display:inline-block;text-decoration: none;">Local-Notification Test</button>
+			<a data-role="button" id="viewMedications" href="#medicationPage" class ="ui-btn ui-btn-raised" style="width:90%;display:inline-block;text-decoration: none;">View Medications</a>
+            <a data-role="button" id="addMedication" href="#addMedPage" class ="ui-btn ui-btn-raised" style="width:90%;display:inline-block;text-decoration: none;">Add New Medication</a>
+			</p>
 		</div>
 		
 		<!-- Medication Information -->
