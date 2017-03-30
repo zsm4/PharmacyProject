@@ -20,6 +20,7 @@ Done:
 	-Keep track of non-compliances(save non-compliances in local memory and when there are 3 add to json) ---- Zach
 	
 ToDo:
+
 	-Receive updates through a web service (every 1 min check json for new medications) ---- Elias
 		-background process
 	-Send non-compliance notifications to provider and pharmacy ---- Zach

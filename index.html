@@ -3,8 +3,10 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="./js/jquery-2.1.4.min.js"></script>
-		<link rel="stylesheet" href="./js/themes/basic.css">
+		<!-- <link rel="stylesheet" href="./js/themes/basic.css"> -->
+        <link rel="stylesheet" href="./js/themes/UPMC_Colors.css">
 		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
+        
 		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
@@ -32,7 +34,10 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
+
+
 				viewUserJSON();	//debugging
+
 				
 				//handle button clicks for takeMedicationPage
 				//took medication
@@ -129,12 +134,12 @@
 						var unitsToTake = value.schedule.unitPerDose;
 						var timesToTake = value.schedule.timesForDose;
 						
-						$("#medications").append("<p>Medication: " + medicationName + "</p>");
-						$("#medications").append("<p>Filled: " + filledDate + "</p>");
-						$("#medications").append("<p>Picked Up: " + pickUpDate + "</p>");
-						$("#medications").append("<p>Dose: " + dose + "</p>");
-						$("#medications").append("<p>Refills: " + refills + "</p>");
-						$("#medications").append("<p>Take: " + unitsToTake + " " + meal + " meal</p>");
+						$("#medications").append("<p><h2>Medication: " + medicationName + "</h2></p>");
+						$("#medications").append("<p><b>Filled:</b> " + filledDate + "</p>");
+						$("#medications").append("<p><b>Picked Up:</b> " + pickUpDate + "</b</p>");
+						$("#medications").append("<p><b>Dose:</b> " + dose + "</p>");
+						$("#medications").append("<p><b>Refills:</b> " + refills + "</p>");
+						$("#medications").append("<p><b>Take:</b> " + unitsToTake + " " + meal + " meal</p>");
 						
 						var schedule = "";
 						$.each(timesToTake, function(key, weekdayTimeCode){
@@ -148,7 +153,7 @@
 								schedule += ", " + weekdayTime;
 							}
 						});
-						$("#medications").append("<p>Schedule: " + schedule + "</p>");
+						$("#medications").append("<p><b>Schedule:</b> " + schedule + "</p>");
 						$("#medications").append("</br>");
 					});
 				});
@@ -311,19 +316,27 @@
 			});
 		</script>
 	</head>
+    
+    <style>
+        .button{width:90%;display:inline-block;text-decoration: none;}
+    </style>
 	
 	<body>		
 	
 		<!-- Homepage -->
-		<div data-role="page" id="homepage" data-title="Homepage">
+		<div data-role="page" id="homepage" data-title="Homepage" data-theme="b" \>
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
-			<button data-role="button" id="testNotification">Local-Notification Test</button>
-			<a data-role="button" id="viewMedications" href="#medicationPage">View Medications</a>
-            <a data-role="button" id="addMedication" href="#addMedPage">Add New Medication</a>
-            <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
-		</div>
+      
+      <div style="text-align:center">
+          <a data-role="button" id="testNotification" class="button" >Local-Notification Test</a>
+          <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+          <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+          <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
+          <a data-role="button" id="surveyButton" href="#survey" class="button">Survey Page</a>		
+      </div>    
+    </div>
 		
 		<!-- Medication Information -->
 		<div data-role="page" id="medicationPage" data-title="Medication Page">
@@ -331,7 +344,7 @@
 				<a id="btnBack" href="#homepage">Back</a>
 				<h1>Medications</h1>
 			</div>
-			<div id="medications" data-role="main" class="ui-body-a"></div>
+			<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
 		</div>
     
 		
@@ -349,6 +362,7 @@
 			</div>
 		</div>
         
+
         <!-- Add New Medication Page -->
         <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
             <div data-role="header">
@@ -383,6 +397,170 @@
             <a data-role="button" id="cancelRemove" href="#homepage">Cancel</a>
             <a data-role="button" id="removeMed" href="#homepage">Remove Medication</a>
         </div>
-		
+    
+    <!-- Survey Page -- >
+    <!-- Nonadherence Survey -->
+
+    <div data-role="page" id="survey" data-title="survey" data-theme="b" >
+        <div data-role="header">
+            <h1>Nonadherence Survey</h1>
+            <a id="btnBack" href="#homepage">Back</a>
+        </div>
+
+        <form style="padding:1%">
+            <div data-role="fieldcontain">
+                <label for="slider2">Do you know that you have not taken your medication?</label>
+                <select name="slider2" id="slider2" data-role="slider">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="reason">What is Your Reason?</label>
+                <input type="text" name="reason" id="reason" value=""  />
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="sideEffects">Are There Side Effects That Bother You?</label>
+                <textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+            </div>
+
+
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <legend>Do you ever forget to take your medicine?</legend>
+                
+                <input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
+                <label for="forget-choice-1">Yes</label>
+                
+                <input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
+                <label for="forget-choice-2">Sometimes</label>
+
+                <input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
+                <label for="forget-choice-3">Never</label>
+            </fieldset>
+            </div>
+
+            
+            
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <legend>Are you careless at times about taking your medicine?</legend>
+
+                <label for="careless-choice-1">Yes</label>
+                <input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+
+                <label for="careless-choice-2">Sometimes</label>
+                <input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
+
+                <label for="careless-choice-3">Never</label>
+                <input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
+            </fieldset>
+            </div>
+
+
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+
+                <input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
+                <label for="feelWorse-choice-1">Yes</label>
+
+                <input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
+                <label for="feelWorse-choice-2">Sometimes</label>
+
+                <input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
+                <label for="feelWorse-choice-3">Never</label>
+            </fieldset>
+            </div>
+
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <legend>Thinking about the last week. How often have you not taken
+                your medicine?</legend>
+
+                <label for="notTaken-choice-0">Never</label>
+                <input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+
+                <label for="notTaken-choice-1">1-2 Times</label>
+                <input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+
+                <label for="notTaken-choice-2">3-5 Times</label>
+                <input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+
+                <label for="notTaken-choice-3">6-10 Times</label>
+                <input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+
+                <label for="notTaken-choice-4">Over 10 Times</label>
+                <input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+
+            </fieldset>
+            </div>
+        </form><!-- End Common Nonadherence Survey -->
+
+        <br><br><br><br>
+        
+        <!-- Start Pain Med Nonadherence Survey -->
+        <div data-role="header">
+            <h1>Pain Medication Specific Survey</h1>
+        </div>
+
+        <form style="padding:1%">
+            <br><br>
+            
+            <div data-role="fieldcontain">
+                <label for="painLevel">Rate Your Pain</label>
+                <input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <legend>Whats you Favorite Snack?:</legend>
+                <input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
+                <label for="checkbox-1a">Cheetos</label>
+
+                <input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
+                <label for="checkbox-2a">Doritos</label>
+
+                <input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
+                <label for="checkbox-3a">Fritos</label>
+
+                <input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
+                <label for="checkbox-4a">Sun Chips</label>
+            </fieldset>
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="question-2">Question 2</label>
+                <textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="question-3">Question 3</label>
+                <textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="question-4">Question 4</label>
+                <textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
+            </div>
+
+            <div data-role="fieldcontain">
+                <label for="question-5">Question 5</label>
+                <textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
+            </div>
+
+
+
+
+            <div class="ui-body ui-body-b">
+            <fieldset class="ui-grid-a">
+                <div class="ui-block"><button type="submit" >Submit</button></div>
+            </fieldset>
+            </div>
+            
+        </form><!-- End Pain Med Nonadherence Survey -->
+        </div><!--/content-adherance Surveys -->		
 	</body>
 </html>
