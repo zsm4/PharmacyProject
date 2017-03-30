@@ -1,0 +1,186 @@
+
+			<!DOCTYPE=html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="./js/jquery-2.1.4.min.js"></script>
+        <!--
+		<link rel="stylesheet" href="./js/themes/basic.css">
+		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
+-->
+		<link rel="stylesheet" href="./js/themes/UPMC_Colors.css">
+		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
+		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
+		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+		<script src="./cordova.js"></script>
+    </head>
+    <body>
+        
+      <!-- Nonadherence Survey -->
+		<div data-role="page" id="homepage" data-title="Homepage" data-theme="b">
+			<div data-role="header">
+				<h1>Nonadherence Survey</h1>
+			</div>
+            
+            <div data-role="fieldcontain">
+				<label for="slider2">Do you know that you have not taken your medication?</label>
+				<select name="slider2" id="slider2" data-role="slider">
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
+				</select>
+			</div>
+            
+        <div data-role="fieldcontain">
+	         <label for="reason">What is Your Reason?</label>
+	         <input type="text" name="reason" id="reason" value=""  />
+			</div>
+
+			<div data-role="fieldcontain">
+			<label for="sideEffects">Are There Side Effects That Bother You?</label>
+			<textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+			</div>
+
+
+            <div data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+                <legend>Do you ever forget to take your medicine?</legend>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2a" value="on" checked="checked">
+                <label for="radio-choice-v-2a">Yes</label>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2b" value="off">
+                <label for="radio-choice-v-2b">No</label>
+            </fieldset>
+			</div>
+            
+            <div data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+                <legend>Are you careless at times about taking your medicine?</legend>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2a" value="on" checked="checked">
+                <label for="radio-choice-v-2a">Yes</label>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2b" value="off">
+                <label for="radio-choice-v-2b">No</label>
+            </fieldset>
+			</div>
+            
+            
+            <div data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+                <legend> Sometimes if you feel worse, do you stop taking your
+medicines?</legend>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2a" value="on" checked="checked">
+                <label for="radio-choice-v-2a">Yes</label>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2b" value="off">
+                <label for="radio-choice-v-2b">No</label>
+                <input type="radio" name="radio-choice-v-2" id="radio-choice-v-2b" value="off">
+                <label for="radio-choice-v-2b">Never</label>
+            </fieldset>
+			</div>
+			
+             <div data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+                <legend>Thinking about the last week. How often have you not taken
+your medicine?</legend>
+                
+                <label for="notTaken-choice-1">1-2 Times</label>
+                <input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+                
+                <label for="notTaken-choice-2">3-5 Times</label>
+                <input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+                
+                <label for="notTaken-choice-3">6-10 Times</label>
+                <input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+                
+                <label for="notTaken-choice-4">Over 10 Times</label>
+                <input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+                
+                
+            </fieldset>
+			</div>
+
+			<div data-role="fieldcontain">
+				<label for="painLevel">Rate Your Pain</label>
+			 	<input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
+			</div>
+
+			<div data-role="fieldcontain">
+			<fieldset data-role="controlgroup">
+				<legend>Choose as many snacks as you'd like:</legend>
+				<input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
+				<label for="checkbox-1a">Cheetos</label>
+
+				<input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
+				<label for="checkbox-2a">Doritos</label>
+
+				<input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
+				<label for="checkbox-3a">Fritos</label>
+
+				<input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
+				<label for="checkbox-4a">Sun Chips</label>
+		    </fieldset>
+			</div>
+
+			<div data-role="fieldcontain">
+			<fieldset data-role="controlgroup" data-type="horizontal">
+		    	<legend>Font styling:</legend>
+		    	<input type="checkbox" name="checkbox-6" id="checkbox-6" class="custom" />
+				<label for="checkbox-6">b</label>
+
+				<input type="checkbox" name="checkbox-7" id="checkbox-7" class="custom" />
+				<label for="checkbox-7"><em>i</em></label>
+
+				<input type="checkbox" name="checkbox-8" id="checkbox-8" class="custom" />
+				<label for="checkbox-8">u</label>
+		    </fieldset>
+			</div>
+
+			<div data-role="fieldcontain">
+			    <fieldset data-role="controlgroup">
+			    	<legend>Choose a pet:</legend>
+			         	<input type="radio" name="radio-choice-1" id="radio-choice-1" value="choice-1" checked="checked" />
+			         	<label for="radio-choice-1">Cat</label>
+
+			         	<input type="radio" name="radio-choice-1" id="radio-choice-2" value="choice-2"  />
+			         	<label for="radio-choice-2">Dog</label>
+
+			         	<input type="radio" name="radio-choice-1" id="radio-choice-3" value="choice-3"  />
+			         	<label for="radio-choice-3">Hamster</label>
+
+			         	<input type="radio" name="radio-choice-1" id="radio-choice-4" value="choice-4"  />
+			         	<label for="radio-choice-4">Lizard</label>
+			    </fieldset>
+			</div>
+
+			<div data-role="fieldcontain">
+			    <fieldset data-role="controlgroup" data-type="horizontal">
+			     	<legend>Layout view:</legend>
+			         	<input type="radio" name="radio-choice-b" id="radio-choice-c" value="on" checked="checked" />
+			         	<label for="radio-choice-c">List</label>
+			         	<input type="radio" name="radio-choice-b" id="radio-choice-d" value="off" />
+			         	<label for="radio-choice-d">Grid</label>
+			         	<input type="radio" name="radio-choice-b" id="radio-choice-e" value="other" />
+			         	<label for="radio-choice-e">Gallery</label>
+			    </fieldset>
+			</div>
+
+			<div data-role="fieldcontain">
+				<label for="select-choice-1" class="select">Choose shipping method:</label>
+				<select name="select-choice-1" id="select-choice-1">
+					<option value="standard">Standard: 7 day</option>
+					<option value="rush">Rush: 3 days</option>
+					<option value="express">Express: next day</option>
+					<option value="overnight">Overnight</option>
+				</select>
+			</div>
+
+
+
+		<div class="ui-body ui-body-b">
+		<fieldset class="ui-grid-a">
+				
+				<div class="ui-block-b"><button type="submit" data-theme="a">Submit</button></div>
+	    </fieldset>
+		</div>
+	</form>
+
+	</div><!--/content-primary -->	
+</body>
+</html>
