@@ -372,12 +372,12 @@
             </div>
             <div data-role="main">
                 <label for="medName">Name:</label>
-                <input type="text" name="medName" id="medName" value="" />
-                <input type="date" name="filledDate" id="filledDate" value="" />
-                <input type="date" name="pickedUpDate" id="pickedUpDate" value="" />
-                <input type="text" name="dose" id="dose" value="" />
-                <input type="text" name="refills" id="refills" value="" />
-                <input type="text" name="schedule" id="schedule" value="" />
+                <input type="text" name="medName" id="medName" value="" placeholder="Medication Name" />
+                <input type="text" name="filledDate" id="filledDate" value="" placeholder="Date Filled" onfocus="(this.type='date')" />
+                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="Date Picked Up" onfocus="(this.type='date')" />
+                <input type="text" name="dose" id="dose" value="" placeholder="Dose" />
+                <input type="text" name="refills" id="refills" value="" placeholder="Number of Refills" />
+                <input type="text" name="schedule" id="schedule" value="" placeholder="Schedule"/>
                 <a data-role="button" id="addMedSubmit" href="#homepage">Add Medication</a>                
             </div>
             <div id="addNewMedication" data-role="main" class="ui-body-a"></div>
