@@ -24,10 +24,10 @@ ToDo:
 	-Receive updates through a web service (every 1 min check json for new medications) ---- Elias
 		-background process
 	-Send non-compliance notifications to provider and pharmacy ---- Zach
-		-Ask Dimitri about this. Seems server side.
+		-Ask Dmitriy about this. Seems server side.
 	-Give users the ability to manually add/remove medications ---- Sascha
 		-add/remove medications to JSON
 	-Display surveys (survey questions will be provided) ---- Adam
-		-Ask Dimitri if you have questions about this
+		-Ask Dmitriy if you have questions about this
 		
 	-Beautify the UI ---- If we feel like it

@@ -122,7 +122,7 @@
 				
 				//setup medication page
 				$(document).on("pagebeforeshow", "#medicationPage", function(){
-					$("#medications").empty();
+					$("#medications").empty;
 					var medicationsArray = userJSON.medications;
 					$.each(medicationsArray, function(key, value){
 						var medicationName = value.name;
@@ -328,14 +328,15 @@
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
-            
-            <div style="text-align:center">
-                <a data-role="button" id="testNotification" class="button" >Local-Notification Test</a>
-                <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-                <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-                <a data-role="button" id="surveyButton" href="#survey" class="button">Survey Page</a>		
-            </div>    
-        </div>
+      
+      <div style="text-align:center">
+          <a data-role="button" id="testNotification" class="button" >Local-Notification Test</a>
+          <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+          <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+          <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
+          <a data-role="button" id="surveyButton" href="#survey" class="button">Survey Page</a>		
+      </div>    
+    </div>
 		
 		<!-- Medication Information -->
 		<div data-role="page" id="medicationPage" data-title="Medication Page">
@@ -361,7 +362,42 @@
 			</div>
 		</div>
         
+
+        <!-- Add New Medication Page -->
+        <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Add New Medication (UI Mockup)</h1>
+            </div>
+            <div data-role="main">
+                <label for="medName">Name:</label>
+                <input type="text" name="medName" id="medName" value="" />
+                <input type="date" name="filledDate" id="filledDate" value="" />
+                <input type="date" name="pickedUpDate" id="pickedUpDate" value="" />
+                <input type="text" name="dose" id="dose" value="" />
+                <input type="text" name="refills" id="refills" value="" />
+                <input type="text" name="schedule" id="schedule" value="" />
+                <a data-role="button" id="addMedSubmit" href="#homepage">Add Medication</a>                
+            </div>
+            <div id="addNewMedication" data-role="main" class="ui-body-a"></div>
+        </div>
         
+        <!-- Remove Medication Page -->
+        <div data-role="page" id="removeMedPage" data-title="Remove Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Remove Medication (UI Mockup)</h1>
+            </div>
+            <div id="removeMedication" data-role="main" class="ui-body-a"></div>
+            <label for="medicationList">Medication:</label>
+            <select name="medicationList" id="medicationList">
+                <option value="Tylenol">Tylenol</option>
+                <option value="Benadryl">Benadryl</option>
+            </select>
+            <a data-role="button" id="cancelRemove" href="#homepage">Cancel</a>
+            <a data-role="button" id="removeMed" href="#homepage">Remove Medication</a>
+        </div>
+    
     <!-- Survey Page -- >
     <!-- Nonadherence Survey -->
 
@@ -525,8 +561,6 @@
             </div>
             
         </form><!-- End Pain Med Nonadherence Survey -->
-        </div><!--/content-adherance Surveys -->
-
-		
+        </div><!--/content-adherance Surveys -->		
 	</body>
 </html>
