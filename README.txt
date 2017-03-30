@@ -15,16 +15,19 @@ To get up and running.
 
 Task Board
 Done:
-	-Display medication list and schedule for each medication
-	
+	-Display medication list and schedule for each medication ---- Zach
+	-Display non-compliance warnings(alert user of noncompliances) ---- Zach
+	-Keep track of non-compliances(save non-compliances in local memory and when there are 3 add to json) ---- Zach
 	
 ToDo:
-	-Receive updates through a web service (every 1 min check json for new medications) ---- <b>Elias</b>
-	-Keep track of non-compliances(save non-compliances in local memory and when there are 3 add to json) ---- <b>Zach</b>
-	-Display non-compliance warnings(alert user of noncompliances) ---- <b>Zach</b>
-	-Send non-compliance notifications to provider and pharmacy(this will just be adding non-compliance to json) ---- <b>Zach</b>
-	-Give users the ability to manually add/remove medications (no updates) ---- <b>Sascha</b>
-		-add medication to JSON
-	-Display surveys (survey questions will be provided) ---- <b>Adam</b>
+
+	-Receive updates through a web service (every 1 min check json for new medications) ---- Elias
+		-background process
+	-Send non-compliance notifications to provider and pharmacy ---- Zach
+		-Ask Dimitri about this. Seems server side.
+	-Give users the ability to manually add/remove medications ---- Sascha
+		-add/remove medications to JSON
+	-Display surveys (survey questions will be provided) ---- Adam
+		-Ask Dimitri if you have questions about this
 		
-	-Beautify the UI ---- <b>everybody</b>
+	-Beautify the UI ---- If we feel like it
