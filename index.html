@@ -34,7 +34,10 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
+
+
 				//viewUserJSON();	//debugging
+
 				
 				//handle button clicks for takeMedicationPage
 				//took medication
@@ -66,7 +69,7 @@
 									{
 										value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
 										localStorage.setItem("userJSON", JSON.stringify(userJSON));
-										viewUserJSON();
+										//viewUserJSON();	//used for debugging
 									}
 								});
 								
@@ -101,9 +104,6 @@
 					
 					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
 					
-					alert(now);
-					alert(oneHour);
-					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					cordova.plugins.notification.local.schedule({
 						id: currentPostponeNotificationID,
@@ -119,7 +119,7 @@
 				
 				//setup medication page
 				$(document).on("pagebeforeshow", "#medicationPage", function(){
-					$("#medications").empty();
+					$("#medications").empty;
 					var medicationsArray = userJSON.medications;
 					$.each(medicationsArray, function(key, value){
 						var medicationName = value.name;
@@ -209,7 +209,7 @@
 				function testNotification()
 				{
 					var userJSON = $.getJSON("./UserJSON", function(data){
-						alert(data.firstName);
+						//alert(data.firstName);
 					}); 
 				
 					if(!notificationIdList)
@@ -316,6 +316,8 @@
     
     <style>
         .button{width:90%;display:inline-block;text-decoration: none;}
+		
+		.ui-header .ui-title { margin-left: 1em; margin-right: 1em; }
     </style>
 	
 	<body>		
@@ -325,14 +327,15 @@
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
-            
-            <div style="text-align:center">
-                <a data-role="button" id="testNotification" class="button" >Local-Notification Test</a>
-                <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-                <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-                <a data-role="button" id="surveyButton" href="#survey" class="button">Survey Page</a>		
-            </div>    
-        </div>
+      
+      <div style="text-align:center">
+          <a data-role="button" id="testNotification" href="#homepage" class="button">Local-Notification Test</a>
+          <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+          <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+          <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
+          <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+      </div>    
+    </div>
 		
 		<!-- Medication Information -->
 		<div data-role="page" id="medicationPage" data-title="Medication Page">
@@ -340,7 +343,9 @@
 				<a id="btnBack" href="#homepage">Back</a>
 				<h1>Medications</h1>
 			</div>
-			<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
+			<div data-role="main" class="ui-body-a">
+				<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
+			</div>
 		</div>
     
 		
@@ -349,20 +354,54 @@
 			<div data-role="header">
 				<h1>Take Medication</h1>
 			</div>
-			<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
-			<br>
-			<div class="ui-grid-b my-breakpoint">
-				<div class="ui-block-a charBlock"><button data-role="button" id="compliance">Yes</button></div>
-				<div class="ui-block-b charBlock"><button data-role="button" id="noncompliance">No</button></div>
-				<div class="ui-block-c charBlock"><button data-role="button" id="later">In an Hour</button></div>
-			</div>
+				<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
+				<br>
+				<div class="ui-grid-b my-breakpoint">
+					<div class="ui-block-a charBlock"><a data-role="button" id="compliance" href="#homepage">Yes</a></div>
+					<div class="ui-block-b charBlock"><a data-role="button" id="noncompliance" href="#homepage">No</a></div>
+					<div class="ui-block-c charBlock"><a data-role="button" id="later" href="#homepage">In an Hour</a></div>
+				</div>
 		</div>
         
+
+        <!-- Add New Medication Page -->
+        <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Add New Medication</h1>
+            </div>
+            <div data-role="main">
+                <label for="medName">Name:</label>
+                <input type="text" name="medName" id="medName" value="" placeholder="Medication Name" />
+                <input type="text" name="filledDate" id="filledDate" value="" placeholder="Date Filled" onfocus="(this.type='date')" />
+                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="Date Picked Up" onfocus="(this.type='date')" />
+                <input type="text" name="dose" id="dose" value="" placeholder="Dose" />
+                <input type="text" name="refills" id="refills" value="" placeholder="Number of Refills" />
+                <input type="text" name="schedule" id="schedule" value="" placeholder="Schedule"/>
+                <a data-role="button" id="addMedSubmit" href="#homepage">Add Medication</a>                
+            </div>
+            <div id="addNewMedication" data-role="main" class="ui-body-a"></div>
+        </div>
         
+        <!-- Remove Medication Page -->
+        <div data-role="page" id="removeMedPage" data-title="Remove Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Remove Medication</h1>
+            </div>
+            <div id="removeMedication" data-role="main" class="ui-body-a"></div>
+            <label for="medicationList">Medication:</label>
+            <select name="medicationList" id="medicationList">
+                <option value="Tylenol">Tylenol</option>
+                <option value="Benadryl">Benadryl</option>
+            </select>
+            <a data-role="button" id="cancelRemove" href="#homepage">Cancel</a>
+            <a data-role="button" id="removeMed" href="#homepage">Remove Medication</a>
+        </div>
+    
     <!-- Survey Page -- >
     <!-- Nonadherence Survey -->
-
-    <div data-role="page" id="survey" data-title="survey" data-theme="b" >
+    <div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
         <div data-role="header">
             <h1>Nonadherence Survey</h1>
             <a id="btnBack" href="#homepage">Back</a>
@@ -522,8 +561,6 @@
             </div>
             
         </form><!-- End Pain Med Nonadherence Survey -->
-        </div><!--/content-adherance Surveys -->
-
-		
+        </div><!--/content-adherance Surveys -->		
 	</body>
 </html>
