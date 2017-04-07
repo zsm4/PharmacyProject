@@ -14,7 +14,7 @@
 	
 		<script>
 			$(document).ready(function(){
-				//must keep track of current index for notification id's
+            	//must keep track of current index for notification id's
 				var currentPostponeNotificationID;
 				
 				//must keep track of our notifications so we can close them
@@ -34,7 +34,9 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
-
+                    
+                console.log(userJSON.firstName);
+                testLoop();
 
 				//viewUserJSON();	//debugging
 
@@ -130,6 +132,7 @@
 						var meal = value.schedule.meal;
 						var unitsToTake = value.schedule.unitPerDose;
 						var timesToTake = value.schedule.timesForDose;
+                        
 						
 						$("#medications").append("<p><h2>Medication: " + medicationName + "</h2></p>");
 						$("#medications").append("<p><b>Filled:</b> " + filledDate + "</p>");
@@ -161,6 +164,7 @@
 					setActionHandlers();
 
 					$("#testNotification").on("click", function(){
+                        
 						cordova.plugins.notification.local.hasPermission(function (granted) {	
 							if(granted)	//if we have permission, then set up notifications
 							{
@@ -186,6 +190,24 @@
 				}, false);
 				
 				
+                function testLoop(){
+                    
+                    var date = new Date();
+                    console.log( 'Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose);
+                    
+                    var atTime = dayCode(userJSON.medications[0].schedule.timesForDose[0].substring(0,2));
+                    var date, daytoset; // given: a Date object and a integer representing the week day
+
+                    var currentDay = date.getDay();
+                    var distance = atTime - currentDay;
+                    date.setDate(date.getDate() + distance+7);
+                    date.setHours(userJSON.medications[0].schedule.timesForDose[0].substring(2,4));
+                    date.setMinutes(0);
+                    console.log('Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose );
+                    
+
+                }
+                
 				//set event handlers for buttons
 				function setActionHandlers()
 				{
@@ -208,45 +230,88 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-					var userJSON = $.getJSON("./UserJSON", function(data){
-						//alert(data.firstName);
-					}); 
-				
-					if(!notificationIdList)
-					{
-						notificationIdList = [];
-					}
 				
 					var now = new Date();
-                    fiveSec = new Date(now + 5 * 1000);
+					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+				
+                    var medNum = userJSON.medications.length;
+                    
+                    //find date from now
+                    
+                    //MO04 - monday at 4 
+                    
+                    now.setFullYear(now.getFullYear,now.getMonth,now.getDate);
+                    
+                    //Date.set(now.)
+                    
+                    var fiveSec = new Date(now + 5 * 1000);
+                    
+                    
+					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					
 					var idIndex = 1;
 					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Tylenol',
-						text: 'Take 2 x 200 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
 					
-					notificationIdList.push(idIndex);
-					idIndex++;
-					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Benadryl',
-						text: 'Take 3 x 100 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
-					
-					notificationIdList.push(idIndex);
-					idIndex++;
+                    for(var i=0;i<medNum;i++){
+                        for(var j;j<userJSON.medications[i].schedule.length;j++){
+                            makeNoti(i+j,i,dayCode(userJSON.medications[i].schedule[j].substring(0,2)));
+                        }
+                    }
+                    
+                    
 				}
+                
+                //function to make notification
+                function makeNoti(index, medIndex, atTime){
+                    
+                    var date = new Date();
+                    
+                    var atTime = dayCode(userJSON.medications[0].schedule.timesForDose[0].substring(0,2));
+                    var date, daytoset; // given: a Date object and a integer representing the week day
+
+                    var currentDay = date.getDay();
+                    var distance = atTime - currentDay;
+                    date.setDate(date.getDate() + distance+7);
+                    date.setHours(userJSON.medications[0].schedule.timesForDose[0].substring(2,4));
+                    date.setMinutes(0);
+                    
+                    cordova.plugins.notification.local.schedule({
+                            id: index,
+                            title: userJSON.medications[medIndex].name,
+                            text: 'Take '+userJSON.medications[medIndex].schedule.unitPerDose+' x '+userJSON.medications[medIndex].dose,
+                            at:date,
+                            every: 'week',
+                        }); 
+                }
+                
+                function dayCode(day){
+                    switch(day){
+						case "MO": 
+							day = "01";
+							break;
+						case "TU": 
+							day = "02";
+							break;
+						case "WE": 
+							day = "03";
+							break;
+						case "TH": 
+							day = "04";
+							break;
+						case "FR": 
+							day = "05";
+							break;
+						case "SA": 
+							day = "06";
+							break;
+						case "SU": 
+							day = "00";
+							break;	
+					}
+                    return day;
+                }
+                
 				
 				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
 				function getWeekdayTime(weekdayTimeCode)
@@ -311,6 +376,9 @@
 					alert(userJSONString);
 				}
 			});
+            
+            
+            
 		</script>
 	</head>
     
