@@ -61,7 +61,7 @@
 							{
 								//write noncompliance to json (THIS IS WHERE YOU WOULD POST TO THE API)
 								localStorage.setItem("noncomplianceArr" + medication, null);	//set noncompliance array to null in local storage
-								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your insurance company and Pharmacist.");	//alert user they have not complied 3 times
+								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your Insurance Company and Pharmacist.");	//alert user they have not complied 3 times
 								
 								//search and find correct medication in json, then push the noncompliance array to it and save to local storage
 								var index;
@@ -78,7 +78,7 @@
 							else
 							{
 								localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));
-								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
+								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
 							}
 						}
 						else	//if we do not have a noncompliance array in local storage
@@ -86,7 +86,7 @@
 							var noncomplianceArr = [];	//create noncompliance array
 							noncomplianceArr.push(noncomplianceDate);	//add noncompliance date
 							localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));	//write to local storage
-							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
+							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
 						}
 						
 				});
@@ -117,7 +117,7 @@
 				
 				//setup medication page
 				$(document).on("pagebeforeshow", "#medicationPage", function(){
-					$("#medications").empty;
+					$("#medications").empty();
 					var medicationsArray = userJSON.medications;
 					$.each(medicationsArray, function(key, value){
 						var medicationName = value.name;
