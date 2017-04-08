@@ -5,7 +5,7 @@ To get up and running.
 	-run "cordova create PharmacyProject edu.pitt.PharmacyProject PharmacyProject"
 	-move into new PharmacyProject folder
 	-run "cordova platform add android"
-	-run "cordova plugin add https://github.com/dhjw/cordova-plugin-local-notifications.git"	CHANGED THIS MAKE SURE TO USE THIS NEW ONE
+	-run "cordova plugin add https://github.com/dhjw/cordova-plugin-local-notifications.git"	CHANGED THIS, MAKE SURE TO USE THIS NEW ONE
 	-copy everything in this directory into PharmacyProject/www/
 	-run "cordova build"
 	-goto PharmacyProject/platforms/android/build/outputs/apk
