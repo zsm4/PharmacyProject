@@ -10,15 +10,17 @@
 		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
+		<script src="./js/moment.min.js"></script>
 		
 	
 		<script>
 			$(document).ready(function(){
-				//must keep track of current index for notification id's
-				var currentPostponeNotificationID;
-				
-				//must keep track of our notifications so we can close them
-				var notificationIdList;
+				//setup notificationID if it's not in local storage
+				if(!localStorage.getItem("notificationID"))
+				{
+					localStorage.setItem("notificationID", 1);
+				}
+
 				
 				//if JSON is not in local storage, bring it into local storage from json file
 				//currently resetting json everytime for debugging
@@ -35,8 +37,7 @@
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
 
-
-				viewUserJSON();	//debugging
+				//viewUserJSON();	//debugging
 
 				
 				//handle button clicks for takeMedicationPage
@@ -60,7 +61,7 @@
 							{
 								//write noncompliance to json (THIS IS WHERE YOU WOULD POST TO THE API)
 								localStorage.setItem("noncomplianceArr" + medication, null);	//set noncompliance array to null in local storage
-								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your insurance company and Pharmacist.");	//alert user they have not complied 3 times
+								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your Insurance Company and Pharmacist.");	//alert user they have not complied 3 times
 								
 								//search and find correct medication in json, then push the noncompliance array to it and save to local storage
 								var index;
@@ -69,7 +70,7 @@
 									{
 										value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
 										localStorage.setItem("userJSON", JSON.stringify(userJSON));
-										viewUserJSON();
+										//viewUserJSON();	//used for debugging
 									}
 								});
 								
@@ -77,7 +78,7 @@
 							else
 							{
 								localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));
-								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
+								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
 							}
 						}
 						else	//if we do not have a noncompliance array in local storage
@@ -85,7 +86,7 @@
 							var noncomplianceArr = [];	//create noncompliance array
 							noncomplianceArr.push(noncomplianceDate);	//add noncompliance date
 							localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));	//write to local storage
-							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
+							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
 						}
 						
 				});
@@ -97,32 +98,26 @@
 					var medication = $("#medication").text();	//get medication name
 					var medicationText = $("#medicationText").text();
 					
-					if(!currentPostponeNotificationID)
-					{
-						currentPostponeNotificationID = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
-					}
-					
 					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
 					
-					alert(now);
-					alert(oneHour);
+					var notificationID = localStorage.getItem("notificationID");
 					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					cordova.plugins.notification.local.schedule({
-						id: currentPostponeNotificationID,
+						id: notificationID,
 						title: medication,
-						text: medicationText + " again",
+						text: medicationText,
 						at: oneHour,
-						every: 1,
 						sound: sound
 					});
 					
-					currentNotificationID++;	//increase our current notificationID
+					notificationID++;
+					localStorage.setItem("notificationID", notificationID);
 				});
 				
 				//setup medication page
 				$(document).on("pagebeforeshow", "#medicationPage", function(){
-					$("#medications").empty;
+					$("#medications").empty();
 					var medicationsArray = userJSON.medications;
 					$.each(medicationsArray, function(key, value){
 						var medicationName = value.name;
@@ -133,6 +128,7 @@
 						var meal = value.schedule.meal;
 						var unitsToTake = value.schedule.unitPerDose;
 						var timesToTake = value.schedule.timesForDose;
+                        
 						
 						$("#medications").append("<p><h2>Medication: " + medicationName + "</h2></p>");
 						$("#medications").append("<p><b>Filled:</b> " + filledDate + "</p>");
@@ -162,33 +158,32 @@
 				document.addEventListener('deviceready', function () {
 					//set action handlers for notification actions when device ready
 					setActionHandlers();
-
-					$("#testNotification").on("click", function(){
-						cordova.plugins.notification.local.hasPermission(function (granted) {	
-							if(granted)	//if we have permission, then set up notifications
-							{
-								cancelAllNotifications();
-								testNotification();
-							}
-							else	//else, ask for permission
-							{
-								cordova.plugins.notification.local.registerPermission(function (granted) {
-									if(granted)	//if user gives us permission set up notifications
-									{
-										cancelAllNotifications();
-										testNotification();
-									}
-									else	//else, inform user they must give us access to notifications
-									{
-										alert("You must give Local-Notification permission for this app to function properly.");
-									}
-								});
-							}
-						});
+					
+					//set up notifications
+					cordova.plugins.notification.local.hasPermission(function (granted) {	
+						if(granted)	//if we have permission, then set up notifications
+						{
+							cancelAllNotifications();
+							testNotification();
+						}
+						else	//else, ask for permission
+						{
+							cordova.plugins.notification.local.registerPermission(function (granted) {
+								if(granted)	//if user gives us permission set up notifications
+								{
+									cancelAllNotifications();
+									testNotification();
+								}
+								else	//else, inform user they must give us access to notifications
+								{
+									alert("You must give Local-Notification permission for this app to function properly.");
+								}
+							});
+						}
 					});
+					
 				}, false);
-				
-				
+                
 				//set event handlers for buttons
 				function setActionHandlers()
 				{
@@ -211,45 +206,82 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-					var userJSON = $.getJSON("./UserJSON", function(data){
-						alert(data.firstName);
-					}); 
-				
-					if(!notificationIdList)
-					{
-						notificationIdList = [];
-					}
-				
-					var now = new Date();
-                    fiveSec = new Date(now + 5 * 1000);
+                    var medNum = userJSON.medications.length;	//number of meds
+                    			
+                    for(var i=0;i<medNum;i++){
+                        for(var j=0;j<userJSON.medications[i].schedule.timesForDose.length;j++){
+                            makeWeeklyNotification(i,dayCode(userJSON.medications[i].schedule.timesForDose[j].substring(0,2)), userJSON.medications[i].schedule.timesForDose[j].substring(2,4), userJSON.medications[i].weeks);
+                        }
+                    }
+				}
+                
+                //function to make a notification to repeat a couple of weeks
+                function makeWeeklyNotification(medIndex, day, hour, weeks){
+					var date = new Date();	//current date
+
+					if(day < date.getDay() + 1){ //if the day to schedule is before today
+						day = day + 7;
+					}	
+					
+					var momentDate = moment().day(day);
+					date = momentDate.toDate();
+					
+					date.setHours(hour);
+                    date.setMinutes(0);
+					date.setSeconds(0);
+					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					
-					var idIndex = 1;
-					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Tylenol',
-						text: 'Take 2 x 200 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
-					
-					notificationIdList.push(idIndex);
-					idIndex++;
-					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Benadryl',
-						text: 'Take 3 x 100 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
-					
-					notificationIdList.push(idIndex);
-					idIndex++;
-				}
+					for(var i=0; i<weeks; i++)
+					{		
+						var notificationID = localStorage.getItem("notificationID");
+						
+						cordova.plugins.notification.local.schedule({
+                            id: notificationID,
+                            title: userJSON.medications[medIndex].name,
+                            text: 'Take '+userJSON.medications[medIndex].schedule.unitPerDose+' x '+userJSON.medications[medIndex].dose,
+							at: date,
+							sound: sound
+                        }); 
+
+						notificationID++; 
+						localStorage.setItem("notificationID", notificationID);
+						
+						momentDate.add(1, "weeks");
+						date = momentDate.toDate();
+						date.setHours(hour);
+						date.setMinutes(0);
+						date.setSeconds(0);
+					}
+                }
+                
+				//convert our day code to Date day code (ex. MO -> 1)
+                function dayCode(day){
+                    switch(day){
+						case "MO": 
+							day = 1;
+							break;
+						case "TU": 
+							day = 2;
+							break;
+						case "WE": 
+							day = 3;
+							break;
+						case "TH": 
+							day = 4;
+							break;
+						case "FR": 
+							day = 5;
+							break;
+						case "SA": 
+							day = 6;
+							break;
+						case "SU": 
+							day = 0;
+							break;	
+					}
+                    return day;
+                }
 				
 				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
 				function getWeekdayTime(weekdayTimeCode)
@@ -314,11 +346,16 @@
 					alert(userJSONString);
 				}
 			});
+            
+            
+            
 		</script>
 	</head>
     
     <style>
         .button{width:90%;display:inline-block;text-decoration: none;}
+		
+		.ui-header .ui-title { margin-left: 1em; margin-right: 1em; }
     </style>
 	
 	<body>		
@@ -329,13 +366,12 @@
 				<h1>PharmacyPro</h1>
 			</div>
       
-      <div style="text-align:center">
-          <a data-role="button" id="testNotification" class="button" >Local-Notification Test</a>
-          <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-          <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-          <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
-          <a data-role="button" id="surveyButton" href="#survey" class="button">Survey Page</a>		
-      </div>    
+	  <div style="text-align:center">
+		  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+		  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+		  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
+		  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+	  </div>    
     </div>
 		
 		<!-- Medication Information -->
@@ -344,7 +380,9 @@
 				<a id="btnBack" href="#homepage">Back</a>
 				<h1>Medications</h1>
 			</div>
-			<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
+			<div data-role="main" class="ui-body-a">
+				<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
+			</div>
 		</div>
     
 		
@@ -353,13 +391,13 @@
 			<div data-role="header">
 				<h1>Take Medication</h1>
 			</div>
-			<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
-			<br>
-			<div class="ui-grid-b my-breakpoint">
-				<div class="ui-block-a charBlock"><button data-role="button" id="compliance">Yes</button></div>
-				<div class="ui-block-b charBlock"><button data-role="button" id="noncompliance">No</button></div>
-				<div class="ui-block-c charBlock"><button data-role="button" id="later">In an Hour</button></div>
-			</div>
+				<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
+				<br>
+				<div class="ui-grid-b my-breakpoint">
+					<div class="ui-block-a charBlock"><a data-role="button" id="compliance" href="#homepage">Yes</a></div>
+					<div class="ui-block-b charBlock"><a data-role="button" id="noncompliance" href="#homepage">No</a></div>
+					<div class="ui-block-c charBlock"><a data-role="button" id="later" href="#homepage">In an Hour</a></div>
+				</div>
 		</div>
         
 
@@ -367,16 +405,16 @@
         <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
             <div data-role="header">
                 <a id="btnBack" href="#homepage">Back</a>
-                <h1>Add New Medication (UI Mockup)</h1>
+                <h1>Add New Medication</h1>
             </div>
             <div data-role="main">
                 <label for="medName">Name:</label>
-                <input type="text" name="medName" id="medName" value="" />
-                <input type="date" name="filledDate" id="filledDate" value="" />
-                <input type="date" name="pickedUpDate" id="pickedUpDate" value="" />
-                <input type="text" name="dose" id="dose" value="" />
-                <input type="text" name="refills" id="refills" value="" />
-                <input type="text" name="schedule" id="schedule" value="" />
+                <input type="text" name="medName" id="medName" value="" placeholder="Medication Name" />
+                <input type="text" name="filledDate" id="filledDate" value="" placeholder="Date Filled" onfocus="(this.type='date')" />
+                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="Date Picked Up" onfocus="(this.type='date')" />
+                <input type="text" name="dose" id="dose" value="" placeholder="Dose" />
+                <input type="text" name="refills" id="refills" value="" placeholder="Number of Refills" />
+                <input type="text" name="schedule" id="schedule" value="" placeholder="Schedule"/>
                 <a data-role="button" id="addMedSubmit" href="#homepage">Add Medication</a>                
             </div>
             <div id="addNewMedication" data-role="main" class="ui-body-a"></div>
@@ -386,7 +424,7 @@
         <div data-role="page" id="removeMedPage" data-title="Remove Medication Page">
             <div data-role="header">
                 <a id="btnBack" href="#homepage">Back</a>
-                <h1>Remove Medication (UI Mockup)</h1>
+                <h1>Remove Medication</h1>
             </div>
             <div id="removeMedication" data-role="main" class="ui-body-a"></div>
             <label for="medicationList">Medication:</label>
@@ -400,8 +438,7 @@
     
     <!-- Survey Page -- >
     <!-- Nonadherence Survey -->
-
-    <div data-role="page" id="survey" data-title="survey" data-theme="b" >
+    <div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
         <div data-role="header">
             <h1>Nonadherence Survey</h1>
             <a id="btnBack" href="#homepage">Back</a>
