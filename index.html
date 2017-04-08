@@ -106,16 +106,13 @@
 					cordova.plugins.notification.local.schedule({
 						id: notificationID,
 						title: medication,
-						text: medicationText + " again",
+						text: medicationText,
 						at: oneHour,
-						every: 1,
 						sound: sound
 					});
 					
 					notificationID++;
 					localStorage.setItem("notificationID", notificationID);
-					
-					localStorage.setItem("notificationID", localStorage.getItem("notificationID") + 1);
 				});
 				
 				//setup medication page
@@ -238,7 +235,7 @@
 					for(var i=0; i<weeks; i++)
 					{		
 						var notificationID = localStorage.getItem("notificationID");
-					
+						
 						cordova.plugins.notification.local.schedule({
                             id: notificationID,
                             title: userJSON.medications[medIndex].name,
