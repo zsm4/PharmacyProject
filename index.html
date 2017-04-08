@@ -15,11 +15,12 @@
 	
 		<script>
 			$(document).ready(function(){
-            	//must keep track of current index for notification id's
-				var notificationIndex;
-				
-				//must keep track of our notifications so we can close them
-				var notificationIdList;
+				//setup notificationID if it's not in local storage
+				if(!localStorage.getItem("notificationID"))
+				{
+					localStorage.setItem("notificationID", 1);
+				}
+
 				
 				//if JSON is not in local storage, bring it into local storage from json file
 				//currently resetting json everytime for debugging
@@ -35,9 +36,6 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
-                    
-                console.log(userJSON.firstName);
-                testLoop();
 
 				//viewUserJSON();	//debugging
 
@@ -100,16 +98,13 @@
 					var medication = $("#medication").text();	//get medication name
 					var medicationText = $("#medicationText").text();
 					
-					if(!notificationIndex)
-					{
-						notificationIndex = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
-					}
-					
 					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
+					
+					var notificationID = localStorage.getItem("notificationID");
 					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					cordova.plugins.notification.local.schedule({
-						id: notificationIndex,
+						id: notificationID,
 						title: medication,
 						text: medicationText + " again",
 						at: oneHour,
@@ -117,7 +112,10 @@
 						sound: sound
 					});
 					
-					notificationIndex++;	//increase our current notificationID
+					notificationID++;
+					localStorage.setItem("notificationID", notificationID);
+					
+					localStorage.setItem("notificationID", localStorage.getItem("notificationID") + 1);
 				});
 				
 				//setup medication page
@@ -163,51 +161,31 @@
 				document.addEventListener('deviceready', function () {
 					//set action handlers for notification actions when device ready
 					setActionHandlers();
-
-					$("#testNotification").on("click", function(){
-                        
-						cordova.plugins.notification.local.hasPermission(function (granted) {	
-							if(granted)	//if we have permission, then set up notifications
-							{
-								cancelAllNotifications();
-								testNotification();
-							}
-							else	//else, ask for permission
-							{
-								cordova.plugins.notification.local.registerPermission(function (granted) {
-									if(granted)	//if user gives us permission set up notifications
-									{
-										cancelAllNotifications();
-										testNotification();
-									}
-									else	//else, inform user they must give us access to notifications
-									{
-										alert("You must give Local-Notification permission for this app to function properly.");
-									}
-								});
-							}
-						});
+					
+					//set up notifications
+					cordova.plugins.notification.local.hasPermission(function (granted) {	
+						if(granted)	//if we have permission, then set up notifications
+						{
+							cancelAllNotifications();
+							testNotification();
+						}
+						else	//else, ask for permission
+						{
+							cordova.plugins.notification.local.registerPermission(function (granted) {
+								if(granted)	//if user gives us permission set up notifications
+								{
+									cancelAllNotifications();
+									testNotification();
+								}
+								else	//else, inform user they must give us access to notifications
+								{
+									alert("You must give Local-Notification permission for this app to function properly.");
+								}
+							});
+						}
 					});
+					
 				}, false);
-				
-				
-                function testLoop(){
-                    
-                    var date = new Date();
-                    console.log( 'Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose);
-                    
-                    var atTime = dayCode(userJSON.medications[0].schedule.timesForDose[0].substring(0,2));
-                    var date, daytoset; // given: a Date object and a integer representing the week day
-
-                    var currentDay = date.getDay();
-                    var distance = atTime - currentDay;
-                    date.setDate(date.getDate() + distance+7);
-                    date.setHours(userJSON.medications[0].schedule.timesForDose[0].substring(2,4));
-                    date.setMinutes(0);
-                    console.log('Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose );
-                    
-
-                }
                 
 				//set event handlers for buttons
 				function setActionHandlers()
@@ -231,8 +209,6 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-					notificationIndex = 0;
-				
                     var medNum = userJSON.medications.length;	//number of meds
                     			
                     for(var i=0;i<medNum;i++){
@@ -244,7 +220,7 @@
                 
                 //function to make a notification to repeat a couple of weeks
                 function makeWeeklyNotification(medIndex, day, hour, weeks){
-                    var date = new Date();	//current date
+					var date = new Date();	//current date
 
 					if(day < date.getDay() + 1){ //if the day to schedule is before today
 						day = day + 7;
@@ -256,29 +232,30 @@
 					date.setHours(hour);
                     date.setMinutes(0);
 					date.setSeconds(0);
-				
 					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					
-					
 					for(var i=0; i<weeks; i++)
 					{		
+						var notificationID = localStorage.getItem("notificationID");
+					
 						cordova.plugins.notification.local.schedule({
-                            id: notificationIndex,
+                            id: notificationID,
                             title: userJSON.medications[medIndex].name,
                             text: 'Take '+userJSON.medications[medIndex].schedule.unitPerDose+' x '+userJSON.medications[medIndex].dose,
 							at: date,
 							sound: sound
                         }); 
+
+						notificationID++; 
+						localStorage.setItem("notificationID", notificationID);
 						
-						notificationIndex++; 
 						momentDate.add(1, "weeks");
 						date = momentDate.toDate();
 						date.setHours(hour);
 						date.setMinutes(0);
 						date.setSeconds(0);
 					}
-					
                 }
                 
 				//convert our day code to Date day code (ex. MO -> 1)
@@ -393,7 +370,6 @@
 			</div>
       
 	  <div style="text-align:center">
-		  <a data-role="button" id="testNotification" href="#homepage" class="button">Local-Notification Test</a>
 		  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
 		  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
 		  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
