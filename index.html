@@ -10,12 +10,13 @@
 		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
+		<script src="./js/moment.min.js"></script>
 		
 	
 		<script>
 			$(document).ready(function(){
-				//must keep track of current index for notification id's
-				var currentPostponeNotificationID;
+            	//must keep track of current index for notification id's
+				var notificationIndex;
 				
 				//must keep track of our notifications so we can close them
 				var notificationIdList;
@@ -34,7 +35,9 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
-
+                    
+                console.log(userJSON.firstName);
+                testLoop();
 
 				//viewUserJSON();	//debugging
 
@@ -97,16 +100,16 @@
 					var medication = $("#medication").text();	//get medication name
 					var medicationText = $("#medicationText").text();
 					
-					if(!currentPostponeNotificationID)
+					if(!notificationIndex)
 					{
-						currentPostponeNotificationID = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
+						notificationIndex = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
 					}
 					
 					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
 					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					cordova.plugins.notification.local.schedule({
-						id: currentPostponeNotificationID,
+						id: notificationIndex,
 						title: medication,
 						text: medicationText + " again",
 						at: oneHour,
@@ -114,7 +117,7 @@
 						sound: sound
 					});
 					
-					currentNotificationID++;	//increase our current notificationID
+					notificationIndex++;	//increase our current notificationID
 				});
 				
 				//setup medication page
@@ -130,6 +133,7 @@
 						var meal = value.schedule.meal;
 						var unitsToTake = value.schedule.unitPerDose;
 						var timesToTake = value.schedule.timesForDose;
+                        
 						
 						$("#medications").append("<p><h2>Medication: " + medicationName + "</h2></p>");
 						$("#medications").append("<p><b>Filled:</b> " + filledDate + "</p>");
@@ -161,6 +165,7 @@
 					setActionHandlers();
 
 					$("#testNotification").on("click", function(){
+                        
 						cordova.plugins.notification.local.hasPermission(function (granted) {	
 							if(granted)	//if we have permission, then set up notifications
 							{
@@ -186,6 +191,24 @@
 				}, false);
 				
 				
+                function testLoop(){
+                    
+                    var date = new Date();
+                    console.log( 'Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose);
+                    
+                    var atTime = dayCode(userJSON.medications[0].schedule.timesForDose[0].substring(0,2));
+                    var date, daytoset; // given: a Date object and a integer representing the week day
+
+                    var currentDay = date.getDay();
+                    var distance = atTime - currentDay;
+                    date.setDate(date.getDate() + distance+7);
+                    date.setHours(userJSON.medications[0].schedule.timesForDose[0].substring(2,4));
+                    date.setMinutes(0);
+                    console.log('Take '+userJSON.medications[0].schedule.unitPerDose+' x '+userJSON.medications[0].dose );
+                    
+
+                }
+                
 				//set event handlers for buttons
 				function setActionHandlers()
 				{
@@ -208,45 +231,83 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-					var userJSON = $.getJSON("./UserJSON", function(data){
-						//alert(data.firstName);
-					}); 
+					notificationIndex = 0;
 				
-					if(!notificationIdList)
-					{
-						notificationIdList = [];
-					}
+                    var medNum = userJSON.medications.length;	//number of meds
+                    			
+                    for(var i=0;i<medNum;i++){
+                        for(var j=0;j<userJSON.medications[i].schedule.timesForDose.length;j++){
+                            makeWeeklyNotification(i,dayCode(userJSON.medications[i].schedule.timesForDose[j].substring(0,2)), userJSON.medications[i].schedule.timesForDose[j].substring(2,4), userJSON.medications[i].weeks);
+                        }
+                    }
+				}
+                
+                //function to make a notification to repeat a couple of weeks
+                function makeWeeklyNotification(medIndex, day, hour, weeks){
+                    var date = new Date();	//current date
+
+					if(day < date.getDay() + 1){ //if the day to schedule is before today
+						day = day + 7;
+					}	
+					
+					var momentDate = moment().day(day);
+					date = momentDate.toDate();
+					
+					date.setHours(hour);
+                    date.setMinutes(0);
+					date.setSeconds(0);
 				
-					var now = new Date();
-                    fiveSec = new Date(now + 5 * 1000);
+					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					
-					var idIndex = 1;
 					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Tylenol',
-						text: 'Take 2 x 200 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
+					for(var i=0; i<weeks; i++)
+					{		
+						cordova.plugins.notification.local.schedule({
+                            id: notificationIndex,
+                            title: userJSON.medications[medIndex].name,
+                            text: 'Take '+userJSON.medications[medIndex].schedule.unitPerDose+' x '+userJSON.medications[medIndex].dose,
+							at: date,
+							sound: sound
+                        }); 
+						
+						notificationIndex++; 
+						momentDate.add(1, "weeks");
+						date = momentDate.toDate();
+						date.setHours(hour);
+						date.setMinutes(0);
+						date.setSeconds(0);
+					}
 					
-					notificationIdList.push(idIndex);
-					idIndex++;
-					
-					cordova.plugins.notification.local.schedule({
-						id: idIndex,
-						title: 'Benadryl',
-						text: 'Take 3 x 100 mg doses',
-						at: fiveSec,
-						every: 1,
-						sound: sound
-					});
-					
-					notificationIdList.push(idIndex);
-					idIndex++;
-				}
+                }
+                
+				//convert our day code to Date day code (ex. MO -> 1)
+                function dayCode(day){
+                    switch(day){
+						case "MO": 
+							day = 1;
+							break;
+						case "TU": 
+							day = 2;
+							break;
+						case "WE": 
+							day = 3;
+							break;
+						case "TH": 
+							day = 4;
+							break;
+						case "FR": 
+							day = 5;
+							break;
+						case "SA": 
+							day = 6;
+							break;
+						case "SU": 
+							day = 0;
+							break;	
+					}
+                    return day;
+                }
 				
 				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
 				function getWeekdayTime(weekdayTimeCode)
@@ -311,6 +372,9 @@
 					alert(userJSONString);
 				}
 			});
+            
+            
+            
 		</script>
 	</head>
     
@@ -328,13 +392,13 @@
 				<h1>PharmacyPro</h1>
 			</div>
       
-      <div style="text-align:center">
-          <a data-role="button" id="testNotification" href="#homepage" class="button">Local-Notification Test</a>
-          <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-          <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-          <a data-role="button" id="removeMedication" href="#removeMedPage">Remove Medication</a>
-          <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
-      </div>    
+	  <div style="text-align:center">
+		  <a data-role="button" id="testNotification" href="#homepage" class="button">Local-Notification Test</a>
+		  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+		  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+		  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
+		  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+	  </div>    
     </div>
 		
 		<!-- Medication Information -->
