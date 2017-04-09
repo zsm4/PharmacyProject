@@ -14,7 +14,7 @@
 		
 	
 		<script>
-			$(document).ready(function(){
+			$(function(){
 				//setup notificationID if it's not in local storage
 				if(!localStorage.getItem("notificationID"))
 				{
@@ -345,9 +345,254 @@
 					var userJSONString = localStorage.getItem("userJSON");
 					alert(userJSONString);
 				}
-			});
+
+                function dailyTimeToggle(){
+                   if($("#medicationTakenSameTime").is(':checked')) {
+                       $('.indivDayTimes').hide();
+                       $('.allTime').show();
+                   } else {
+                       $('.allTime').hide();
+                       sundayToggle();
+                       mondayToggle();
+                       tuesdayToggle();
+                       wednesdayToggle();
+                       thursdayToggle();
+                       fridayToggle();
+                       saturdayToggle();
+                   }
+                }
+                $("#medicationTakenSameTime").click(dailyTimeToggle);
             
-            
+
+                
+                function sundayToggle(){
+                    if($("#sunday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.sundayTimeView').show();
+                        }
+                    } else {
+                        $('.sundayTimeView').hide();
+                    }
+                }
+                $("#sunday").click(sundayToggle);
+                
+                function mondayToggle(){
+                    if($("#monday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.mondayTimeView').show();
+                        }
+                    } else {
+                        $('.mondayTimeView').hide();
+                    }
+                }
+                $("#monday").click(mondayToggle);
+                
+                function tuesdayToggle(){
+                    if($("#tuesday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.tuesdayTimeView').show();
+                        }
+                    } else {
+                        $('.tuesdayTimeView').hide();
+                    }
+                }
+                $("#tuesday").click(tuesdayToggle);
+                
+                function wednesdayToggle(){
+                    if($("#wednesday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.wednesdayTimeView').show();
+                        }
+                    } else {
+                        $('.wednesdayTimeView').hide();
+                    }
+                }
+                $("#wednesday").click(wednesdayToggle);
+                
+                function thursdayToggle(){
+                    if($("#thursday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.thursdayTimeView').show();
+                        }
+                    } else {
+                        $('.thursdayTimeView').hide();
+                    }
+                }
+                $("#thursday").click(thursdayToggle);
+                
+                function fridayToggle(){
+                    if($("#friday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.fridayTimeView').show();
+                        }
+                    } else {
+                        $('.fridayTimeView').hide();
+                    }
+                }
+                $("#friday").click(fridayToggle);
+                
+                function saturdayToggle(){
+                    if($("#saturday").is(':checked')) {
+                        if($("#medicationTakenSameTime").is(':checked')) {
+                            
+                        } else {
+                            $('.saturdayTimeView').show();
+                        }
+                    } else {
+                        $('.saturdayTimeView').hide();
+                    }
+                }
+                $("#saturday").click(saturdayToggle);
+                
+                $('.allTime').hide();
+                $('.indivDayTimes').hide();
+                
+				$(document).on("pagebeforeshow", "#removeMedPage", function(){
+					var medicationList = userJSON.medications;
+                    medCount = 0;
+					$.each(medicationList, function(key, value){
+						var medicationName = value.name;
+                        $("#removeMedList").append('<option value="' + medCount + '">' + medicationName + '</option>');
+                        medCount++;
+                    });
+                });
+                
+                function removeMedicationFromJSON(){
+                    
+                    medIndex = jQuery("#removeMedList option:selected").val();
+                    userJSON.medications.splice(medIndex,1);
+                    localStorage.setItem("userJSON", JSON.stringify(userJSON));
+                    alert("The selected medication has been successfully removed.");
+                    $.mobile.changePage("#homepage");
+                    
+                }
+                $("#removeMedButton").click(removeMedicationFromJSON);
+                
+                function addMedicationToJSON(){
+                    var medName = $('#medName').val();
+                    var dateFilled = $('#filledDate').val();
+                    var datePickedUp = $('#pickedUpDate').val();
+                    var doseAmount = $('#doseAmount').val();
+                    var doseNumber = $('#doseNumber').val();
+                    var refills = $('#refills').val();
+                    var weeks = $('#weeks').val();
+                    var meal = $('#meal').val();
+                    var medicationTakenSameTime = $('#medicationTakenSameTime').val();
+                    var allTimeAdminister = $('#allTimeAdminister').val();
+                    var sunday = $('#sunday').val();
+                    var sundayTime = $('#sundayTimeAdminister').val();
+                    var monday = $('#monday').val();
+                    var mondayTime = $('#mondayTimeAdminister').val();
+                    var tuesday = $('#tuesday').val();
+                    var tuesdayTime = $('#tuesdayTimeAdminister').val();
+                    var wednesday = $('#wednesday').val();
+                    var wednesdayTime = $('#wednesdayTimeAdminister').val();
+                    var thursday = $('#thursday').val();
+                    var thursdayTime = $('#thursdayTimeAdminister').val();
+                    var friday = $('#friday').val();
+                    var fridayTime = $('#fridayTimeAdminister').val();
+                    var saturday = $('#saturday').val();
+                    var saturdayTime = $('#saturdayTimeAdminister').val();
+                    if(medName.length < 1 || dateFilled.length < 1 || datePickedUp.length < 1 || doseAmount.length < 1 || doseNumber.length < 1 || refills.length < 1 || weeks.length < 1) {
+                        alert("Please confirm that all information is entered correctly.");
+                    } else if(sunday == 0 && monday == 0 && tuesday == 0 && wednesday == 0 && thursday == 0 && friday == 0 && saturday == 0) {
+                        alert("Please select a day to take the medication.");
+                    } else {
+                        var newMedRecord = '{';
+                        newMedRecord += '"name": "' + medName + '", ';
+                        newMedRecord += '"filledDate": "' + dateFilled + '", ';
+                        newMedRecord += '"pickUpDate": "' + datePickedUp + '", ';
+                        newMedRecord += '"dose": "' + doseAmount + '", ';
+                        newMedRecord += '"refills": ' + refills + ', ';
+                        newMedRecord += '"weeks": ' + weeks + ', ';
+                        newMedRecord += '"isPerscribed": false, ';
+                        newMedRecord += '"schedule": {';
+                            newMedRecord += '"unitPerDose": [' + doseNumber + ', ';
+                            var timesForDose;
+                            if(medicationTakenSameTime == 1) {
+                                sundayTime = allTimeAdminister;
+                                mondayTime = allTimeAdminister;
+                                tuesdayTime = allTimeAdminister;
+                                wednesdayTime = allTimeAdminister;
+                                thursdayTime = allTimeAdminister;
+                                fridayTime = allTimeAdminister;
+                                saturdayTime = allTimeAdminister;
+                            }
+                            if(monday == 1) {
+                                if(tuesday == 1 || wednesday == 1 || thursday == 1 || friday == 1 || saturday == 1 || sunday == 1){
+                                    timesForDose += '"MO' + mondayTime + '", ';
+                                } else {
+                                    timesForDose += '"MO' + mondayTime + '"';
+                                }
+                            }
+                            if(tuesday == 1) {
+                                if(wednesday == 1 || thursday == 1 || friday == 1 || saturday == 1 || sunday == 1){
+                                    timesForDose += '"TU' + tuesdayTime + '", ';
+                                } else {
+                                    timesForDose += '"TU' + tuesdayTime + '"';
+                                }
+                            }
+                            if(wednesday == 1) {
+                                if(thursday == 1 || friday == 1 || saturday == 1 || sunday == 1){
+                                    timesForDose += '"WE' + wednesdayTime + '", ';
+                                } else {
+                                    timesForDose += '"WE' + wednesdayTime + '"';
+                                }
+                            }
+                            if(thursday == 1) {
+                                if(friday == 1 || saturday == 1 || sunday == 1){
+                                    timesForDose += '"TH' + thursdayTime + '", ';
+                                } else {
+                                    timesForDose += '"TH' + thursdayTime + '"';
+                                }
+                            }
+                            if(friday == 1) {
+                                if(saturday == 1 || sunday == 1){
+                                    timesForDose += '"FR' + fridayTime + '", ';
+                                } else {
+                                    timesForDose += '"FR' + fridayTime + '"';
+                                }
+                            }
+                            if(saturday == 1) {
+                                if(sunday == 1){
+                                    timesForDose += '"SA' + saturdayTime + '", ';
+                                } else {
+                                    timesForDose += '"SA' + saturdayTime + '"';
+                                }
+                            }
+                            if(sunday == 1) {
+                                timesForDose += '"SU' + sundayTime + '"';
+                            }
+                            newMedRecord += '],';
+                            //newMedRecord += timesForDose + '],';
+                            newMedRecord += '"meal": "' + meal + '"';
+                        newMedRecord += '},';
+                        newMedRecord += '"noncompliances": ';
+                        newMedRecord += '[';
+                        newMedRecord += '';
+                        newMedRecord += ']';
+                        userJSON.medications.push(newMedRecord);
+                        localStorage.setItem("userJSON", JSON.stringify(userJSON));
+                        alert("The medication has been successfully added.");
+                        $.mobile.changePage("#homepage");
+                    }
+                    
+                }
+                $("#addMedSubmit").click(addMedicationToJSON);
+                console.log(userJSON);
+            });
             
 		</script>
 	</head>
@@ -409,13 +654,193 @@
             </div>
             <div data-role="main">
                 <label for="medName">Name:</label>
-                <input type="text" name="medName" id="medName" value="" placeholder="Medication Name" />
-                <input type="text" name="filledDate" id="filledDate" value="" placeholder="Date Filled" onfocus="(this.type='date')" />
-                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="Date Picked Up" onfocus="(this.type='date')" />
-                <input type="text" name="dose" id="dose" value="" placeholder="Dose" />
-                <input type="text" name="refills" id="refills" value="" placeholder="Number of Refills" />
-                <input type="text" name="schedule" id="schedule" value="" placeholder="Schedule"/>
-                <a data-role="button" id="addMedSubmit" href="#homepage">Add Medication</a>                
+                <input type="text" name="medName" id="medName" placeholder="E.g. Acetaminophen" required/>
+                <label for="filledDate">Date Filled:</label>
+                <input type="text" name="filledDate" id="filledDate" value="" placeholder="E.g. 02/28/2017" onfocus="(this.type='date')" required/>
+                <label for="pickedUpDate">Date Picked Up:</label>
+                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="E.g. 03/01/2017" onfocus="(this.type='date')" required/>
+                <label for="doseAmount">Dose Amount:</label>
+                <input type="text" name="doseAmount" id="doseAmount" placeholder="E.g. 325 mg" required/>
+                <label for="doseNumber">Number of Doses:</label>
+                <input type="number" name="doseNumber" id="doseNumber" placeholder="E.g. Take 2 with meal" required />
+                <label for="refills">Refills:</label>
+                <input type="number" name="refills" id="refills" placeholder="E.g. 1" required/>
+                <label for="weeks">Number of Weeks:</label>
+                <input type="number" name="weeks" id="weeks" placeholder="E.g. 2" required/>
+                <label for="meal">Meal:</label>
+                <select name="meal" id="meal">
+                    <option value="Before">Before Meal</option>
+                    <option value="After">After Meal</option>
+                    <option value="NA">N/A</option>
+                </select>
+                <p>Schedule:</p>
+                <label for="medicationTakenSameTime">Take medication at same time for each dose</label>
+                <input type="checkbox" name="medicationTakenSameTime" id="medicationTakenSameTime">
+                <div class="allTime">
+                    <label for="allTimeAdminister">Time to take medication:</label>
+                    <select name="allTimeAdminister" id="allTimeAdminister">
+                        <option value="00">12:00 AM</option>
+                        <script>
+                            for(hour = 1; hour < 12; hour++) {
+                                $("#allTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                            }
+                        </script>
+                        <option value="12">12:00 PM</option>
+                        <script>
+                            uiHour = 1;
+                            for(hour = 13; hour < 24; hour++) {
+                                $("#allTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                uiHour++;
+                            }
+                        </script>
+                    </select>
+                </div>
+                <fieldset data-role="controlgroup" data-type="vertical" id="daysOfWeek">
+                    <label for="sunday">Sunday</label>
+                        <input type="checkbox" name="sunday" id="sunday">
+                        <div class="indivDayTimes sundayTimeView">
+                            <select name="sundayTimeAdminister" id="sundayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#sundayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#sundayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="monday">Monday</label>
+                        <input type="checkbox" name="monday" id="monday">
+                        <div class="indivDayTimes mondayTimeView">
+                            <select name="mondayTimeAdminister" id="mondayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#mondayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#mondayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="tuesday">Tuesday</label>
+                        <input type="checkbox" name="tuesday" id="tuesday">
+                        <div class="indivDayTimes tuesdayTimeView">
+                            <select name="tuesdayTimeAdminister" id="tuesdayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#tuesdayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#tuesdayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="wednesday">Wednesday</label>
+                        <input type="checkbox" name="wednesday" id="wednesday">
+                        <div class="indivDayTimes wednesdayTimeView">
+                            <select name="wednesdayTimeAdminister" id="wednesdayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#wednesdayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#wednesdayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="thursday">Thursday</label>
+                        <input type="checkbox" name="thursday" id="thursday">
+                        <div class="indivDayTimes thursdayTimeView">
+                            <select name="thursdayTimeAdminister" id="thursdayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#thursdayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#thursdayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="friday">Friday</label>
+                        <input type="checkbox" name="friday" id="friday">
+                        <div class="indivDayTimes fridayTimeView">
+                            <select name="fridayTimeAdminister" id="fridayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#fridayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#fridayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    <label for="saturday">Saturday</label>
+                        <input type="checkbox" name="saturday" id="saturday">
+                        <div class="indivDayTimes saturdayTimeView">
+                            <select name="saturdayTimeAdminister" id="saturdayTimeAdminister">
+                                <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#saturdayTimeAdminister").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#saturdayTimeAdminister").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                </fieldset>
+                
+                <a data-role="button" id="cancelAddButton" href="#homepage">Cancel</a>
+                <a data-role="button" id="addMedSubmit">Add Medication</a>
+                
             </div>
             <div id="addNewMedication" data-role="main" class="ui-body-a"></div>
         </div>
@@ -426,14 +851,13 @@
                 <a id="btnBack" href="#homepage">Back</a>
                 <h1>Remove Medication</h1>
             </div>
-            <div id="removeMedication" data-role="main" class="ui-body-a"></div>
-            <label for="medicationList">Medication:</label>
-            <select name="medicationList" id="medicationList">
-                <option value="Tylenol">Tylenol</option>
-                <option value="Benadryl">Benadryl</option>
-            </select>
-            <a data-role="button" id="cancelRemove" href="#homepage">Cancel</a>
-            <a data-role="button" id="removeMed" href="#homepage">Remove Medication</a>
+            <div id="removeMedicationContent" data-role="main" class="ui-body-a">
+                <label for="removeMedList">Select Medication to Remove:</label>
+                <select name="removeMedList" id="removeMedList">
+                </select>
+                <a data-role="button" id="cancelRemoveButton" href="#homepage">Cancel</a>
+                <a data-role="button" id="removeMedButton">Remove Medication</a>
+            </div>
         </div>
     
     <!-- Survey Page -- >
