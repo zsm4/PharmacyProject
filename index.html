@@ -349,17 +349,27 @@
                 
 				$(document).on("pagebeforeshow", "#removeMedPage", function(){
 					var medicationList = userJSON.medications;
-                    medCount = 0;
-                    $(".removeMedList").empty();
+                    var medicCount = 0;
+					$("#removeMedList").empty();
 					$.each(medicationList, function(key, value){
 						var medicationName = value.name;
                         var prescribedStatus = value.isPerscribed;
-                        if(prescribedStatus == false){
-                            $("#removeMedList").append('<option value="' + medCount + '">' + medicationName + '</option>');
-                        }
-                        medCount++;
+						console.log(medicationName+" "+prescribedStatus);
+                        
+                        
+                        //if we dont care about prescribed status
+                        $("#removeMedList").append('<li data-icon="delete" value="' + medicCount + '" > <a href="#">' + medicationName + '</li>');
+                        
+                        // if we do care about prescribed status
+                        /*if(prescribedStatus == true){
+                            $("#removeMedList").append('<li  value="' + medicCount + '">' + medicationName + '</li>');
+							console.log(medicationName);
+                        }*/
+                        
+                        medicCount++; 
+
                     });
-                    $('.removeMedList').selectmenu().selectmenu('refresh');
+                    $('#removeMedList').listview('refresh');
                 });
                 
                 $('#removeMedPage').bind('pageinit', function() {
@@ -367,8 +377,11 @@
                         alert("There are no medications that can be removed.");
                         //$.mobile.changePage("#homepage");
                     } else {
-                       $('.removeMedList').selectmenu('refresh', true);
-                        console.log("hi!!!");
+                       //$('.removeMedList').selectmenu('refresh', true);
+					   var select='';
+                        //$("select#removeMedList").append(select).selectmenu("refresh");
+
+						console.log("hi!!!");
                     }
                 });
                 
@@ -638,19 +651,23 @@
 
         
         <!-- Remove Medication Page -->
-        <div data-role="page" id="removeMedPage" data-title="Remove Medication Page">
+        <section data-role="page" id="removeMedPage" data-title="Remove Medication Page">
             <div data-role="header">
                 <a id="btnBack" href="#homepage">Back</a>
                 <h1>Remove Medication</h1>
             </div>
-            <div id="removeMedicationContent" data-role="main" class="ui-body-a">
+            
+            <div id="removeMedicationContent" class="ui-content" role="main">
                 <label for="removeMedList">Select Medication to Remove:</label>
-                <select name="removeMedList" id="removeMedList" class="removeMedList">
-                </select>
+                
+                <ul data-role="listview" data-inset="true"  id="removeMedList" class="ui-nodisc-icon ui-alt-icon">
+                
+                </ul>
+				
                 <a data-role="button" id="cancelRemoveButton" href="#homepage">Cancel</a>
                 <a data-role="button" id="removeMedButton">Remove Medication</a>
             </div>
-        </div>
+        </section>
     
     <!-- Survey Page -- >
     <!-- Nonadherence Survey -->
