@@ -10,6 +10,7 @@
 		"filledDate": "03/02/16",
 		"pickUpDate": "03/05/16",
 		"dose": "200 mg",
+        "isOpioid": "false",
 		"refills": 2,
 		"schedule": {
 			"unitPerDose": 2,
@@ -27,6 +28,7 @@
 		"filledDate": "03/07/16",
 		"pickUpDate": "03/09/16",
 		"dose": "100 mg",
+        "isOpioid": "true",
 		"refills": 3,
 		"schedule": {
 			"unitPerDose": 3,
