@@ -72,7 +72,10 @@
 										//viewUserJSON();	//used for debugging
 									}
 								});
-								
+                                
+                                // send to survey page after missing 3 times
+                                window.location = '#surveyPage';
+								// if medication is a pain med
 							}
 							else
 							{
@@ -767,6 +770,7 @@
         <br><br><br><br>
         
         <!-- Start Pain Med Nonadherence Survey -->
+        <!-- hide if not a pain medication -->
         <div data-role="header">
             <h1>Pain Medication Specific Survey</h1>
         </div>

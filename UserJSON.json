@@ -13,6 +13,7 @@
 		"refills": 2,
 		"weeks": 4,
 		"isPerscribed": false,
+        "isOpioid": false,
 		"schedule": {
 			"unitPerDose": 2,
 			"timesForDose": ["MO04", "TU04", "WE04", "TH04", "FR04", "SA04", "SU04"],
@@ -32,6 +33,7 @@
 		"refills": 3,
 		"weeks": 8,
 		"isPerscribed": true,
+        "isOpioid": true,
 		"schedule": {
 			"unitPerDose": 3,
 			"timesForDose": ["MO11", "TU12", "WE13", "TH23", "FR01", "SA10", "SU06"],
