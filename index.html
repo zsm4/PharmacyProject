@@ -10,6 +10,12 @@
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
 		<script src="./js/moment.min.js"></script>
+        
+        <!--gets rid of orange box highlight -->
+        <style> 
+            * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
+                -webkit-tap-highlight-color: transparent; }
+        </style>
 		
 	
 		<script>
@@ -541,13 +547,13 @@
 				<h1>PharmacyPro</h1>
 			</div>
       
-	  <div style="text-align:center">
-		  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-		  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-		  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
-		  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
-	  </div>    
-    </div>
+			<div style="text-align:center">
+			  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+			  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+			  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
+			  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+			</div>    
+		</div>
 		
 		<!-- Medication Information -->
 		<div data-role="page" id="medicationPage" data-title="Medication Page">
@@ -598,6 +604,12 @@
                 <label for="weeks"><b>Number of Weeks:</b></label>
                 <input type="number" name="weeks" id="weeks" placeholder="E.g. 2" required/>
                 <label for="meal"><b>Meal:</b></label>
+				<select name="meal" id="meal">
+                    <option value="noMealSelected">Select Meal Choice</option>
+                    <option value="Before">Before Meal</option>
+                    <option value="After">After Meal</option>
+                    <option value="NA">N/A</option>
+                </select>
 
                 <p><b>Schedule</b></p>
 
@@ -667,105 +679,104 @@
             </div>
         </section>
     
-    <!-- Survey Page -- >
-    <!-- Nonadherence Survey -->
-    <div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
-        <div data-role="header">
-            <h1>Nonadherence Survey</h1>
-            <a id="btnBack" href="#homepage">Back</a>
-        </div>
+		<!-- Survey Page -- >
+		<!-- Nonadherence Survey -->
+		<div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
+			<div data-role="header">
+				<h1>Nonadherence Survey</h1>
+				<a id="btnBack" href="#homepage">Back</a>
+			</div>
 
-        <form style="padding:1%">
-            <div data-role="fieldcontain">
-                <label for="slider2">Do you know that you have not taken your medication?</label>
-                <select name="slider2" id="slider2" data-role="slider">
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-            </select>
-            </div>
+			<form style="padding:1%">
+				<div data-role="fieldcontain">
+					<label for="slider2">Do you know that you have not taken your medication?</label>
+					<select name="slider2" id="slider2" data-role="slider">
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
+				</select>
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="reason">What is Your Reason?</label>
-                <input type="text" name="reason" id="reason" value=""  />
-            </div>
+				<div data-role="fieldcontain">
+					<label for="reason">What is Your Reason?</label>
+					<input type="text" name="reason" id="reason" value=""  />
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="sideEffects">Are There Side Effects That Bother You?</label>
-                <textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
-            </div>
+				<div data-role="fieldcontain">
+					<label for="sideEffects">Are There Side Effects That Bother You?</label>
+					<textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+				</div>
 
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Do you ever forget to take your medicine?</legend>
+					
+					<input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
+					<label for="forget-choice-1">Yes</label>
+					
+					<input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
+					<label for="forget-choice-2">Sometimes</label>
 
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend>Do you ever forget to take your medicine?</legend>
-                
-                <input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
-                <label for="forget-choice-1">Yes</label>
-                
-                <input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
-                <label for="forget-choice-2">Sometimes</label>
+					<input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
+					<label for="forget-choice-3">Never</label>
+				</fieldset>
+				</div>
 
-                <input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
-                <label for="forget-choice-3">Never</label>
-            </fieldset>
-            </div>
+				
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Are you careless at times about taking your medicine?</legend>
 
-            
-            
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend>Are you careless at times about taking your medicine?</legend>
+					<label for="careless-choice-1">Yes</label>
+					<input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
 
-                <label for="careless-choice-1">Yes</label>
-                <input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+					<label for="careless-choice-2">Sometimes</label>
+					<input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
 
-                <label for="careless-choice-2">Sometimes</label>
-                <input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
-
-                <label for="careless-choice-3">Never</label>
-                <input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
-            </fieldset>
-            </div>
+					<label for="careless-choice-3">Never</label>
+					<input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
+				</fieldset>
+				</div>
 
 
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
 
-                <input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
-                <label for="feelWorse-choice-1">Yes</label>
+					<input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
+					<label for="feelWorse-choice-1">Yes</label>
 
-                <input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
-                <label for="feelWorse-choice-2">Sometimes</label>
+					<input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
+					<label for="feelWorse-choice-2">Sometimes</label>
 
-                <input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
-                <label for="feelWorse-choice-3">Never</label>
-            </fieldset>
-            </div>
+					<input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
+					<label for="feelWorse-choice-3">Never</label>
+				</fieldset>
+				</div>
 
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend>Thinking about the last week. How often have you not taken
-                your medicine?</legend>
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Thinking about the last week. How often have you not taken
+					your medicine?</legend>
 
-                <label for="notTaken-choice-0">Never</label>
-                <input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+					<label for="notTaken-choice-0">Never</label>
+					<input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
 
-                <label for="notTaken-choice-1">1-2 Times</label>
-                <input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+					<label for="notTaken-choice-1">1-2 Times</label>
+					<input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
 
-                <label for="notTaken-choice-2">3-5 Times</label>
-                <input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+					<label for="notTaken-choice-2">3-5 Times</label>
+					<input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
 
-                <label for="notTaken-choice-3">6-10 Times</label>
-                <input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+					<label for="notTaken-choice-3">6-10 Times</label>
+					<input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
 
-                <label for="notTaken-choice-4">Over 10 Times</label>
-                <input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+					<label for="notTaken-choice-4">Over 10 Times</label>
+					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
 
-            </fieldset>
-            </div>
-        </form><!-- End Common Nonadherence Survey -->
+				</fieldset>
+				</div>
+			</form><!-- End Common Nonadherence Survey -->
+
 
         <br><br><br><br>
         
@@ -775,61 +786,61 @@
             <h1>Pain Medication Specific Survey</h1>
         </div>
 
-        <form style="padding:1%">
-            <br><br>
-            
-            <div data-role="fieldcontain">
-                <label for="painLevel">Rate Your Pain</label>
-                <input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
-            </div>
+			<form style="padding:1%">
+				<br><br>
+				
+				<div data-role="fieldcontain">
+					<label for="painLevel">Rate Your Pain</label>
+					<input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
+				</div>
 
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend>Whats you Favorite Snack?:</legend>
-                <input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
-                <label for="checkbox-1a">Cheetos</label>
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Whats you Favorite Snack?:</legend>
+					<input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
+					<label for="checkbox-1a">Cheetos</label>
 
-                <input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
-                <label for="checkbox-2a">Doritos</label>
+					<input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
+					<label for="checkbox-2a">Doritos</label>
 
-                <input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
-                <label for="checkbox-3a">Fritos</label>
+					<input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
+					<label for="checkbox-3a">Fritos</label>
 
-                <input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
-                <label for="checkbox-4a">Sun Chips</label>
-            </fieldset>
-            </div>
+					<input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
+					<label for="checkbox-4a">Sun Chips</label>
+				</fieldset>
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="question-2">Question 2</label>
-                <textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
-            </div>
+				<div data-role="fieldcontain">
+					<label for="question-2">Question 2</label>
+					<textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="question-3">Question 3</label>
-                <textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
-            </div>
+				<div data-role="fieldcontain">
+					<label for="question-3">Question 3</label>
+					<textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="question-4">Question 4</label>
-                <textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
-            </div>
+				<div data-role="fieldcontain">
+					<label for="question-4">Question 4</label>
+					<textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
+				</div>
 
-            <div data-role="fieldcontain">
-                <label for="question-5">Question 5</label>
-                <textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
-            </div>
-
-
+				<div data-role="fieldcontain">
+					<label for="question-5">Question 5</label>
+					<textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
+				</div>
 
 
-            <div class="ui-body ui-body-b">
-            <fieldset class="ui-grid-a">
-                <div class="ui-block"><button type="submit" >Submit</button></div>
-            </fieldset>
-            </div>
-            
-        </form><!-- End Pain Med Nonadherence Survey -->
-        </div><!--/content-adherance Surveys -->		
+
+
+				<div class="ui-body ui-body-b">
+				<fieldset class="ui-grid-a">
+					<div class="ui-block"><button type="submit" >Submit</button></div>
+				</fieldset>
+				</div>
+				
+			</form><!-- End Pain Med Nonadherence Survey -->
+		</div><!--/content-adherance Surveys -->		
 	</body>
 </html>
