@@ -346,10 +346,13 @@
 					alert(userJSONString);
 				}
 
+                var medIndex = null;
                 
 				$(document).on("pagebeforeshow", "#removeMedPage", function(){
+                    medIndex = null;
 					var medicationList = userJSON.medications;
                     var medicCount = 0;
+                    
 					$("#removeMedList").empty();
 					$.each(medicationList, function(key, value){
 						var medicationName = value.name;
@@ -357,42 +360,30 @@
 						console.log(medicationName+" "+prescribedStatus);
                         
                         
-                        //if we dont care about prescribed status
-                        $("#removeMedList").append('<li data-icon="delete" value="' + medicCount + '" > <a href="#">' + medicationName + '</li>');
-                        
-                        // if we do care about prescribed status
-                        /*if(prescribedStatus == true){
-                            $("#removeMedList").append('<li  value="' + medicCount + '">' + medicationName + '</li>');
-							console.log(medicationName);
-                        }*/
+                        if(prescribedStatus == false){
+                            $("#removeMedList").append('<li data-icon="check" value="' + medicCount + '" > <a href="index.html#removeMedPage">' + medicationName + '</li>');
+                        }
                         
                         medicCount++; 
 
                     });
                     $('#removeMedList').listview('refresh');
-                });
-                
-                $('#removeMedPage').bind('pageinit', function() {
-                    if($(".removeMedList").is(':empty')) {
+                    
+                    $("#removeMedList li").on("click", function(){
+                        medIndex = $(this).attr('value');
+                    });
+                    
+                    if($("#removeMedList").is(':empty')) {
                         alert("There are no medications that can be removed.");
-                        //$.mobile.changePage("#homepage");
-                    } else {
-                       //$('.removeMedList').selectmenu('refresh', true);
-					   var select='';
-                        //$("select#removeMedList").append(select).selectmenu("refresh");
-
-						console.log("hi!!!");
+                        $.mobile.changePage("#homepage");
                     }
                 });
                 
                 function removeMedicationFromJSON(){
-                    
-                    medIndex = jQuery("#removeMedList option:selected").val();
                     userJSON.medications.splice(medIndex,1);
                     localStorage.setItem("userJSON", JSON.stringify(userJSON));
                     alert("The selected medication has been successfully removed.");
                     $.mobile.changePage("#homepage");
-                    
                 }
                 $("#removeMedButton").click(removeMedicationFromJSON);
                 
