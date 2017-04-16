@@ -3,7 +3,6 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="./js/jquery-2.1.4.min.js"></script>
-		<!-- <link rel="stylesheet" href="./js/themes/basic.css"> -->
         <link rel="stylesheet" href="./js/themes/UPMC_Colors.css">
 		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
         
@@ -580,29 +579,25 @@
                 <a id="btnBack" href="#homepage">Back</a>
                 <h1>Add New Medication</h1>
             </div>
-            <div data-role="main">
-                <label for="medName">Name:</label>
+            <div data-role="main" style="padding:2%;">
+                <label for="medName"><b>Name:</b></label>
                 <input type="text" name="medName" id="medName" placeholder="E.g. Acetaminophen" required/>
-                <label for="filledDate">Date Filled:</label>
+                <label for="filledDate"><b>Date Filled:</b></label>
                 <input type="text" name="filledDate" id="filledDate" value="" placeholder="E.g. 02/28/2017" onfocus="(this.type='date')" required/>
-                <label for="pickedUpDate">Date Picked Up:</label>
+                <label for="pickedUpDate"><b>Date Picked Up:</b></label>
                 <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="E.g. 03/01/2017" onfocus="(this.type='date')" required/>
-                <label for="doseAmount">Dose Amount:</label>
+                <label for="doseAmount"><b>Dose Amount:</b></label>
                 <input type="text" name="doseAmount" id="doseAmount" placeholder="E.g. 325 mg" required/>
-                <label for="doseNumber">Number of Doses:</label>
+                <label for="doseNumber"><b>Number of Doses:</b></label>
                 <input type="number" name="doseNumber" id="doseNumber" placeholder="E.g. Take 2 with meal" required />
-                <label for="refills">Refills:</label>
+                <label for="refills"><b>Refills:</b></label>
                 <input type="number" name="refills" id="refills" placeholder="E.g. 1" required/>
-                <label for="weeks">Number of Weeks:</label>
+                <label for="weeks"><b>Number of Weeks:</b></label>
                 <input type="number" name="weeks" id="weeks" placeholder="E.g. 2" required/>
-                <label for="meal">Meal:</label>
-                <select name="meal" id="meal">
-                    <option value="noMealSelected">Select Meal Choice</option>
-                    <option value="Before">Before Meal</option>
-                    <option value="After">After Meal</option>
-                    <option value="NA">N/A</option>
-                </select>
-                <p>Schedule</p>
+                <label for="meal"><b>Meal:</b></label>
+
+                <p><b>Schedule</b></p>
+
                 <div class="scheduleList" id="scheduleList">
                     <ul data-role="listview" name="scheduleListEntries" id="scheduleListEntries"></ul>
                 </div>
@@ -646,7 +641,7 @@
                     <a data-role="button" id="cancelAddButton" href="#homepage">Cancel</a>
                     <a data-role="button" id="addMedSubmit">Add Medication</a>
                 </div>
-        </div>
+			</div>
         </div>
 
         
