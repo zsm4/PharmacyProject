@@ -21,6 +21,8 @@
 		
 	
 		<script>
+		
+			
 			$(function(){
 				//setup notificationID if it's not in local storage
 				if(!localStorage.getItem("notificationID"))
@@ -43,8 +45,39 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
-
+				
+				updateGlance();
+				
 				//viewUserJSON();	//debugging
+				function updateGlance(){
+					var glanceHtml="";
+					$("#glance").empty();
+					var glanceDate = new Date();
+					for(var i=0;i<userJSON.medications.length;i++){
+						for(var j=0;j<userJSON.medications[i].schedule.timesForDose.length;j++){
+							if(dayCode(userJSON.medications[i].schedule.timesForDose[j].substring(0,2))== glanceDate.getDay()){
+								var ampm;
+								if(parseInt(userJSON.medications[i].schedule.timesForDose[j].substring(2,4))>11){
+									ampm = "pm";
+								}else ampm ="am";
+								glanceHtml += "<p>"+userJSON.medications[i].name+" x "+userJSON.medications[i].dose+ " at "+userJSON.medications[i].schedule.timesForDose[j].substring(2,4)+ampm;
+									
+								//$("#glance").append("<p>"+userJSON.medications[i].name+" x "+userJSON.medications[i].dose+
+									//" at "+userJSON.medications[i].schedule.timesForDose[j].substring(2,4)+ampm);
+
+							}
+						
+						}
+					}
+					
+					$('#glance').append(glanceHtml).trigger('create');
+
+				
+					/*if($("#glance").is(':empty')){
+						$("#glance").append("No medications to take today");
+					}*/
+				}
+				
 
 				
 				//handle button clicks for takeMedicationPage
@@ -405,7 +438,8 @@
                     $.mobile.changePage("#homepage");
                 }
                 $("#removeMedButton").click(removeMedicationFromJSON);
-                
+                $("#removeMedButton").click(updateGlance);
+				
                 $('.dayTimePrompt').hide();
                 
                 function addDayTimeButtonClick() {
@@ -524,6 +558,8 @@
                     
                 }
                 $("#addMedSubmit").click(addMedicationToJSON);
+                $("#addMedSubmit").click(updateGlance);
+
                 console.log(userJSON);
                 
 				$(document).on("pagebeforeshow", "#addMedPage", function(){
@@ -550,10 +586,17 @@
 			</div>
       
 			<div style="text-align:center">
-			  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-			  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-			  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
-			  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+				<div class="ui-body ui-body-a ui-corner-all" style="margin:1%;background-color:#f6f6f6">
+					<h3>Today at a glance</h3>
+				
+					<div id="glance"></div>
+				</div>
+				
+				
+				<a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+				<a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+				<a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
+				<a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
 			</div>    
 		</div>
 		
@@ -574,13 +617,14 @@
 			<div data-role="header">
 				<h1>Take Medication</h1>
 			</div>
-				<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
-				<br>
-				<div class="ui-grid-b my-breakpoint">
-					<div class="ui-block-a charBlock"><a data-role="button" id="compliance" href="#homepage">Yes</a></div>
-					<div class="ui-block-b charBlock"><a data-role="button" id="noncompliance" href="#homepage">No</a></div>
-					<div class="ui-block-c charBlock"><a data-role="button" id="later" href="#homepage">In an Hour</a></div>
-				</div>
+			
+			<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
+			<br>
+			<div class="ui-grid-b my-breakpoint">
+				<div class="ui-block-a charBlock"><a data-role="button" id="compliance" href="#homepage">Yes</a></div>
+				<div class="ui-block-b charBlock"><a data-role="button" id="noncompliance" href="#homepage">No</a></div>
+				<div class="ui-block-c charBlock"><a data-role="button" id="later" href="#homepage">In an Hour</a></div>
+			</div>
 		</div>
         
 
@@ -590,6 +634,7 @@
                 <a id="btnBack" href="#homepage">Back</a>
                 <h1>Add New Medication</h1>
             </div>
+			
             <div data-role="main" style="padding:2%;">
                 <label for="medName"><b>Name:</b></label>
                 <input type="text" name="medName" id="medName" placeholder="E.g. Acetaminophen" required/>
@@ -778,19 +823,17 @@
 					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
 
 				</fieldset>
-        </div>
+				</div>
             
-            <div class="ui-body ui-body-b">
-            <fieldset class="ui-grid-a">
-                <div class="ui-block"><button type="submit" id="generalSurveySelectBtn" onclick="generalSurveySubmit()">Submit</button></div>
-            </fieldset>
-            </div>
+				<div class="ui-body ui-body-b">
+				<fieldset class="ui-grid-a">
+					<div class="ui-block"><button type="submit" id="generalSurveySelectBtn" onclick="generalSurveySubmit()">Submit</button></div>
+				</fieldset>
+				</div>
             
-        </form><!-- End Common Nonadherence Survey -->
+			</form><!-- End Common Nonadherence Survey -->
         </div><!--/content- generel non adherance Survey -->
 
-
- 
         
         
         <!-- Start Pain Med Nonadherence Survey -->
@@ -1062,11 +1105,7 @@
             }// end opioid survey submit function
             
 
-        </script>
-		
-
-
-				
+        </script>			
 	</body>
 </html>
 		
