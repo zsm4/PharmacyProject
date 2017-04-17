@@ -853,6 +853,7 @@
             </fieldset>
             </div>
 
+
             
             
             <div data-role="fieldcontain">
@@ -893,6 +894,7 @@
             function generalSurveySubmit(){
                 // create array to store survey data
                 var surveyArray = [];
+
                 // add med name
                 surveyArray.push(sessionStorage.getItem('medication'));
                 // add date/Time
@@ -987,6 +989,7 @@
             
             function opioidSurveySubmit(){
                 var storedSurvey = [];
+
                 storedSurvey = sessionStorage.getItem('Survey');
                 
                 // get data from fields, validate
