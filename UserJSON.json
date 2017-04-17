@@ -12,6 +12,9 @@
 		"dose": "200 mg",
         "isOpioid": "false",
 		"refills": 2,
+		"weeks": 4,
+		"isPerscribed": false,
+        "isOpioid": false,
 		"schedule": {
 			"unitPerDose": 2,
 			"timesForDose": ["MO04", "TU04", "WE04", "TH04", "FR04", "SA04", "SU04"],
@@ -24,15 +27,18 @@
 	},
 	
 	{
-		"name": "Benadryl",
+		"name": "Oxycodone",
 		"filledDate": "03/07/16",
 		"pickUpDate": "03/09/16",
 		"dose": "100 mg",
         "isOpioid": "true",
 		"refills": 3,
+		"weeks": 8,
+		"isPerscribed": true,
+        "isOpioid": true,
 		"schedule": {
 			"unitPerDose": 3,
-			"timesForDose": ["MO11", "TU12", "WE13", "TH23", "FR24", "SA10", "SU06"],
+			"timesForDose": ["MO11", "TU12", "WE13", "TH23", "FR01", "SA10", "SU06"],
 			"meal": "After"
 		},
 		"noncompliances": 

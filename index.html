@@ -81,12 +81,15 @@
 									}
 								});
                                 
+
                                 //Set med to session storage
                                 sessionStorage.setItem('medication', medication);
                                 //Set med opioid status to session storage
                                 sessionStorage.setItem('opioid', medIsOpioid);
                                 // send to survey page after missing 3 times
-+                               window.location = '#surveyPage';
+                               window.location = '#surveyPage';
+
+								// if medication is a pain med
 							}
 							else
 							{
@@ -239,6 +242,7 @@
 					var momentDate = moment().day(day);
 					date = momentDate.toDate();
 					
+
 					date.setHours(hour);
                     date.setMinutes(0);
 					date.setSeconds(0);
@@ -675,108 +679,104 @@
             </div>
         </section>
     
-        
-        
-        
-        
-        <!-- Survey Page -- >
-              <!-- Nonadherence Survey -->
+		<!-- Survey Page -- >
+		<!-- Nonadherence Survey -->
+		<div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
+			<div data-role="header">
+				<h1>Nonadherence Survey</h1>
+				<a id="btnBack" href="#homepage">Back</a>
+			</div>
 
-    <div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
-        <div data-role="header">
-            <h1>Nonadherence Survey</h1>
+			<form style="padding:1%">
+				<div data-role="fieldcontain">
+					<label for="slider2">Do you know that you have not taken your medication?</label>
+					<select name="slider2" id="slider2" data-role="slider">
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
+				</select>
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="reason">What is Your Reason?</label>
+					<input type="text" name="reason" id="reason" value=""  />
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="sideEffects">Are There Side Effects That Bother You?</label>
+					<textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+				</div>
+
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Do you ever forget to take your medicine?</legend>
+					
+					<input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
+					<label for="forget-choice-1">Yes</label>
+					
+					<input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
+					<label for="forget-choice-2">Sometimes</label>
+
+
+					<input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
+					<label for="forget-choice-3">Never</label>
+				</fieldset>
+				</div>
+
+				
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Are you careless at times about taking your medicine?</legend>
+
+					<label for="careless-choice-1">Yes</label>
+					<input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+
+					<label for="careless-choice-2">Sometimes</label>
+					<input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
+
+					<label for="careless-choice-3">Never</label>
+					<input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
+				</fieldset>
+				</div>
+
+
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+
+
+					<input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
+					<label for="feelWorse-choice-1">Yes</label>
+
+					<input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
+					<label for="feelWorse-choice-2">Sometimes</label>
+
+					<input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
+					<label for="feelWorse-choice-3">Never</label>
+				</fieldset>
+				</div>
+
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Thinking about the last week. How often have you not taken
+					your medicine?</legend>
+
+					<label for="notTaken-choice-0">Never</label>
+					<input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+
+					<label for="notTaken-choice-1">1-2 Times</label>
+					<input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+
+					<label for="notTaken-choice-2">3-5 Times</label>
+					<input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+
+					<label for="notTaken-choice-3">6-10 Times</label>
+					<input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+
+					<label for="notTaken-choice-4">Over 10 Times</label>
+					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+
+				</fieldset>
         </div>
-
-        <form id="generalSurvey">
-            <div data-role="fieldcontain">
-                <label for="awareMissed">Do you know that you have not taken your medication?</label>
-                <select name="awareMissed" id="awareMissed" data-role="slider">
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-            </select>
-            </div>
-
-            <div data-role="fieldcontain">
-                <label for="reason">What is Your Reason?</label>
-                <input type="text" name="reason" id="reason" value=""  />
-            </div>
-
-            <div data-role="fieldcontain">
-                <label for="sideEffects">Are There Side Effects That Bother You?</label>
-                <textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
-            </div>
-
-
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup" id="forgetChoice">
-                <legend>Do you ever forget to take your medicine?</legend>
-                
-                <input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
-                <label for="forget-choice-1">Yes</label>
-                
-                <input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
-                <label for="forget-choice-2">Sometimes</label>
-
-                <input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
-                <label for="forget-choice-3">Never</label>
-            </fieldset>
-            </div>
-
-            
-            
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup" id="carelessChoice">
-                <legend>Are you careless at times about taking your medicine?</legend>
-
-                <label for="careless-choice-1">Yes</label>
-                <input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
-
-                <label for="careless-choice-2">Sometimes</label>
-                <input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
-
-                <label for="careless-choice-3">Never</label>
-                <input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
-            </fieldset>
-            </div>
-
-
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup" id="feelWorse">
-                <legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
-
-                <input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
-                <label for="feelWorse-choice-1">Yes</label>
-
-                <input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
-                <label for="feelWorse-choice-2">Sometimes</label>
-
-                <input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
-                <label for="feelWorse-choice-3">Never</label>
-            </fieldset>
-            </div>
-
-            <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup" id="forgotWeek">
-                <legend>Thinking about the last week. How often have you not taken
-                your medicine?</legend>
-
-                <label for="notTaken-choice-0">Never</label>
-                <input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
-
-                <label for="notTaken-choice-1">1-2 Times</label>
-                <input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
-
-                <label for="notTaken-choice-2">3-5 Times</label>
-                <input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
-
-                <label for="notTaken-choice-3">6-10 Times</label>
-                <input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
-
-                <label for="notTaken-choice-4">Over 10 Times</label>
-                <input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
-
-            </fieldset>
-            </div>
             
             <div class="ui-body ui-body-b">
             <fieldset class="ui-grid-a">
@@ -787,14 +787,16 @@
         </form><!-- End Common Nonadherence Survey -->
         </div><!--/content- generel non adherance Survey -->
 
+
  
         
         
         <!-- Start Pain Med Nonadherence Survey -->
         <div data-role="page" id="opioidSurveyPage" data-title="opioidSurveyPage" data-theme="b">
-        <div data-role="header">
-            <h1>Pain Medication Specific Survey</h1>
-        </div>
+
+          <div data-role="header">
+              <h1>Pain Medication Specific Survey</h1>
+          </div>
 
         <form id="opioidSurvey">
             <br><br>
@@ -857,16 +859,15 @@
 
                 <label for="emptyEarly">Yes</label>
                 <input type="radio" name="emptyEarly-yes" id="emptyEarly-yes" value="Yes">
-
-                <label for="emptyEarly">Sometimes</label>
+              
+              <label for="emptyEarly">Sometimes</label>
                 <input type="radio" name="emptyEarly-sometimes" id="emptyEarly-sometimes" value="Sometimes">
 
                 <label for="emptyEarly">Never</label>
                 <input type="radio" name="emptyEarly-never" id="emptyEarly-never" value="Never" checked="checked">
             </fieldset>
             </div>
-            
-    
+			
 
             <div class="ui-body ui-body-b">
             <fieldset class="ui-grid-a">
@@ -1058,6 +1059,9 @@
 
         </script>
 		
+
+
+				
 	</body>
 </html>
 		
