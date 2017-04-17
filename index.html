@@ -9,6 +9,16 @@
 		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
+<<<<<<< HEAD
+=======
+		<script src="./js/moment.min.js"></script>
+        
+        <!--gets rid of orange box highlight -->
+        <style> 
+            * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
+                -webkit-tap-highlight-color: transparent; }
+        </style>
+>>>>>>> master
 		
 	
 		<script>
@@ -318,7 +328,178 @@
 					var userJSONString = localStorage.getItem("userJSON");
 					alert(userJSONString);
 				}
+<<<<<<< HEAD
 			});
+=======
+
+                var medIndex = null;
+                
+				$(document).on("pagebeforeshow", "#removeMedPage", function(){
+                    medIndex = null;
+					var medicationList = userJSON.medications;
+                    var medicCount = 0;
+                    
+					$("#removeMedList").empty();
+					$.each(medicationList, function(key, value){
+						var medicationName = value.name;
+                        var prescribedStatus = value.isPerscribed;
+						console.log(medicationName+" "+prescribedStatus);
+                        
+                        
+                        if(prescribedStatus == false){
+                            $("#removeMedList").append('<li data-icon="check" value="' + medicCount + '" > <a href="index.html#removeMedPage">' + medicationName + '</li>');
+                        }
+                        
+                        medicCount++; 
+
+                    });
+                    $('#removeMedList').listview('refresh');
+                    
+                    $("#removeMedList li").on("click", function(){
+                        medIndex = $(this).attr('value');
+                    });
+                    
+                    if($("#removeMedList").is(':empty')) {
+                        alert("There are no medications that can be removed.");
+                        $.mobile.changePage("#homepage");
+                    }
+                });
+                
+                function removeMedicationFromJSON(){
+                    userJSON.medications.splice(medIndex,1);
+                    localStorage.setItem("userJSON", JSON.stringify(userJSON));
+                    alert("The selected medication has been successfully removed.");
+                    $.mobile.changePage("#homepage");
+                }
+                $("#removeMedButton").click(removeMedicationFromJSON);
+                
+                $('.dayTimePrompt').hide();
+                
+                function addDayTimeButtonClick() {
+                    var daySelectMenu = $("select#addDayChoice");
+                    var timeSelectMenu = $("select#addTimeChoice");
+                    daySelectMenu[0].selectedIndex = 0;
+                    daySelectMenu.selectmenu("refresh");
+                    timeSelectMenu[0].selectedIndex = 0;
+                    timeSelectMenu.selectmenu("refresh");
+                    $('.dayTimePrompt').show();
+                    $('.addDayTimeButton').hide();
+                    $('.addMedCancelSubmit').hide();
+                }
+                
+                $("#addDayTimeButton").click(addDayTimeButtonClick);
+                
+                function cancelAddDayTimeButtonClick() {
+                    $('.dayTimePrompt').hide();
+                    $('.addDayTimeButton').show();
+                    $('.addMedCancelSubmit').show();
+                }
+                
+                $("#cancelDayTime").click(cancelAddDayTimeButtonClick);
+                
+                var daysAndTimes = new Array();
+
+                
+                function submitAddDayTimeButton() {
+                    var dayAdded;
+                    var timeAdded;
+                    if($("#addDayChoice option:selected").val() == "selectDay") {
+                        alert("Please select a day to add.");
+                    } else if($("#addTimeChoice option:selected").val() == "selectTime") {
+                        alert("Please select a time to add.");
+                    } else {
+                        dayAdded = $("#addDayChoice option:selected").val();
+                        timeAdded = $("#addTimeChoice option:selected").val();
+                        var alreadyExists = false;
+                        $.each( daysAndTimes, function(index, value) {
+                            if( value == dayAdded + timeAdded) {
+                                alert("This day and time has already been added to your schedule. Please enter another day and time if necessary.");
+                                alreadyExists = true;
+                            }
+                        });
+                        if(alreadyExists == false) {
+                            daysAndTimes.push(dayAdded + timeAdded);
+                            $("#scheduleListEntries").append("<li>" + $("#addDayChoice option:selected").text() + " at " + $("#addTimeChoice option:selected").text() + "</li>");
+                            $("#scheduleListEntries").listview("refresh");
+                            $('.dayTimePrompt').hide();
+                            $('.addDayTimeButton').show();
+                            $('.addMedCancelSubmit').show();
+                        }
+                    }
+                }
+                
+                $("#submitDayTime").click(submitAddDayTimeButton);
+                
+                function addMedicationToJSON(){
+                    var medName = $('#medName').val();
+                    function format(inputDate) {
+                        var date;
+                        var year = inputDate.substr(2, 2);
+                        console.log(year);
+                        var month = inputDate.substr(5, 2);
+                        console.log(month);
+                        var day = inputDate.substr(8, 2);
+                        console.log(day);
+                        return date = month + "/" + day + "/" + year;
+                    }
+                    var dateFilled = $('#filledDate').val();
+                    dateFilled = format(dateFilled);
+                    var datePickedUp = $('#pickedUpDate').val();
+                    datePickedUp = format(datePickedUp);
+                    var doseAmount = $('#doseAmount').val();
+                    var doseNumber = $('#doseNumber').val();
+                    var refills = $('#refills').val();
+                    var weeks = $('#weeks').val();
+                    var meal = $('#meal').val();
+                    if(medName.length < 1 || dateFilled.length < 1 || dateFilled.text == "mm/dd/yyyy" || datePickedUp.length < 1 || datePickedUp.text == "mm/dd/yyyy" || doseAmount.length < 1 || doseNumber.length < 1 || refills.length < 1 || weeks.length < 1 || meal == "noMealSelected") {
+                        alert("Please confirm that all information is entered correctly.");
+                    } else if(daysAndTimes.length == 0) {
+                        alert("Please add at least one day and time to take the medication you wish to add.");
+                    } else {
+                        var newMedRecord = '{';
+                        newMedRecord += '"name": "' + medName + '", ';
+                        newMedRecord += '"filledDate": "' + dateFilled + '", ';
+                        newMedRecord += '"pickUpDate": "' + datePickedUp + '", ';
+                        newMedRecord += '"dose": "' + doseAmount + '", ';
+                        newMedRecord += '"refills": ' + refills + ', ';
+                        newMedRecord += '"weeks": ' + weeks + ', ';
+                        newMedRecord += '"isPerscribed": false, ';
+                        newMedRecord += '"schedule": {';
+                        newMedRecord += '"unitPerDose": ' + doseNumber + ', ';
+                        newMedRecord += '"timesForDose": [';
+                        newMedRecord += '"' + daysAndTimes[0] + '"' ;
+                        if(daysAndTimes.length > 1) {
+                            for(var i = 1; i < daysAndTimes.length; i++){
+                                newMedRecord += ', "' + daysAndTimes[i] + '"';
+                            }
+                        }
+                        newMedRecord += '], ';
+                        newMedRecord += '"meal": "' + meal + '"';
+                        newMedRecord += '}, ';
+                        newMedRecord += '"noncompliances": ';
+                        newMedRecord += '[';
+                        newMedRecord += '';
+                        newMedRecord += ']';
+                        newMedRecord += '}';
+                        var toPushToJSON = JSON.parse(newMedRecord);
+                        userJSON.medications.push(toPushToJSON);
+                        newMedRecord = JSON.stringify(toPushToJSON);
+                        localStorage.setItem("userJSON", JSON.stringify(userJSON));
+                        alert("The medication has been successfully added.");
+                        $.mobile.changePage("#homepage");
+                    }
+                    
+                }
+                $("#addMedSubmit").click(addMedicationToJSON);
+                console.log(userJSON);
+                
+				$(document).on("pagebeforeshow", "#addMedPage", function(){
+                    $("#scheduleListEntries").empty();
+                });
+                
+            });
+            
+>>>>>>> master
 		</script>
 	</head>
 	
@@ -329,9 +510,19 @@
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
+<<<<<<< HEAD
 			<button data-role="button" id="testNotification">Local-Notification Test</button>
 			<a data-role="button" id="viewMedications" href="#medicationPage">View Medications</a>
             <a data-role="button" id="addMedication" href="#addMedPage">Add New Medication</a>
+=======
+      
+			<div style="text-align:center">
+			  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
+			  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
+			  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
+			  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+			</div>    
+>>>>>>> master
 		</div>
 		
 		<!-- Medication Information -->
@@ -358,6 +549,7 @@
 			</div>
 		</div>
         
+<<<<<<< HEAD
         
         <!-- Survey Page -- >
               <!-- Nonadherence Survey -->
@@ -375,18 +567,144 @@
                 <option value="no">No</option>
             </select>
             </div>
+=======
 
-            <div data-role="fieldcontain">
-                <label for="reason">What is Your Reason?</label>
-                <input type="text" name="reason" id="reason" value=""  />
+        <!-- Add New Medication Page -->
+        <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Add New Medication</h1>
             </div>
+            <div data-role="main" style="padding:2%;">
+                <label for="medName"><b>Name:</b></label>
+                <input type="text" name="medName" id="medName" placeholder="E.g. Acetaminophen" required/>
+                <label for="filledDate"><b>Date Filled:</b></label>
+                <input type="text" name="filledDate" id="filledDate" value="" placeholder="E.g. 02/28/2017" onfocus="(this.type='date')" required/>
+                <label for="pickedUpDate"><b>Date Picked Up:</b></label>
+                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="E.g. 03/01/2017" onfocus="(this.type='date')" required/>
+                <label for="doseAmount"><b>Dose Amount:</b></label>
+                <input type="text" name="doseAmount" id="doseAmount" placeholder="E.g. 325 mg" required/>
+                <label for="doseNumber"><b>Number of Doses:</b></label>
+                <input type="number" name="doseNumber" id="doseNumber" placeholder="E.g. Take 2 with meal" required />
+                <label for="refills"><b>Refills:</b></label>
+                <input type="number" name="refills" id="refills" placeholder="E.g. 1" required/>
+                <label for="weeks"><b>Number of Weeks:</b></label>
+                <input type="number" name="weeks" id="weeks" placeholder="E.g. 2" required/>
+                <label for="meal"><b>Meal:</b></label>
+				<select name="meal" id="meal">
+                    <option value="noMealSelected">Select Meal Choice</option>
+                    <option value="Before">Before Meal</option>
+                    <option value="After">After Meal</option>
+                    <option value="NA">N/A</option>
+                </select>
 
-            <div data-role="fieldcontain">
-                <label for="sideEffects">Are There Side Effects That Bother You?</label>
-                <textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+                <p><b>Schedule</b></p>
+
+                <div class="scheduleList" id="scheduleList">
+                    <ul data-role="listview" name="scheduleListEntries" id="scheduleListEntries"></ul>
+                </div>
+                <div class="dayTimePrompt" id="dayTimePrompt">
+                    <select name="addDayChoice" id="addDayChoice">
+                        <option value="selectDay">Select Day</option>
+                        <option value="SU">Sunday</option>
+                        <option value="MO">Monday</option>
+                        <option value="TU">Tuesday</option>
+                        <option value="WE">Wednesday</option>
+                        <option value="TH">Thursday</option>
+                        <option value="FR">Friday</option>
+                        <option value="SA">Saturday</option>
+                    </select>
+                    <select name="addTimeChoice" id="addTimeChoice">
+                        <option value="selectTime">Select Time</option>
+                        <option value="00">12:00 AM</option>
+                                <script>
+                                    for(hour = 1; hour < 12; hour++) {
+                                        $("#addTimeChoice").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
+                                    }
+                                </script>
+                                <option value="12">12:00 PM</option>
+                                <script>
+                                    uiHour = 1;
+                                    for(hour = 13; hour < 24; hour++) {
+                                        $("#addTimeChoice").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
+                                        uiHour++;
+                                    }
+                                </script>
+                    </select>
+                    
+                    <a data-role="button" id="cancelDayTime">Cancel Add Day/Time</a>
+                    <a data-role="button" id="submitDayTime">Submit Day/Time</a>
+                </div>
+                <div class="addDayTimeButton" id="addDayTimeButton">
+                    <a data-role="button" id="addDayTime">Add Day/Time</a>
+                </div>
+                <div class="addMedCancelSubmit" id="addMedCancelSubmit">
+                    <br>
+                    <a data-role="button" id="cancelAddButton" href="#homepage">Cancel</a>
+                    <a data-role="button" id="addMedSubmit">Add Medication</a>
+                </div>
+			</div>
+        </div>
+
+        
+        <!-- Remove Medication Page -->
+        <section data-role="page" id="removeMedPage" data-title="Remove Medication Page">
+            <div data-role="header">
+                <a id="btnBack" href="#homepage">Back</a>
+                <h1>Remove Medication</h1>
             </div>
+            
+            <div id="removeMedicationContent" class="ui-content" role="main">
+                <label for="removeMedList">Select Medication to Remove:</label>
+                
+                <ul data-role="listview" data-inset="true"  id="removeMedList" class="ui-nodisc-icon ui-alt-icon">
+                
+                </ul>
+				
+                <a data-role="button" id="cancelRemoveButton" href="#homepage">Cancel</a>
+                <a data-role="button" id="removeMedButton">Remove Medication</a>
+            </div>
+        </section>
+    
+		<!-- Survey Page -- >
+		<!-- Nonadherence Survey -->
+		<div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
+			<div data-role="header">
+				<h1>Nonadherence Survey</h1>
+				<a id="btnBack" href="#homepage">Back</a>
+			</div>
 
+			<form style="padding:1%">
+				<div data-role="fieldcontain">
+					<label for="slider2">Do you know that you have not taken your medication?</label>
+					<select name="slider2" id="slider2" data-role="slider">
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
+				</select>
+				</div>
+>>>>>>> master
 
+				<div data-role="fieldcontain">
+					<label for="reason">What is Your Reason?</label>
+					<input type="text" name="reason" id="reason" value=""  />
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="sideEffects">Are There Side Effects That Bother You?</label>
+					<textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+				</div>
+
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Do you ever forget to take your medicine?</legend>
+					
+					<input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
+					<label for="forget-choice-1">Yes</label>
+					
+					<input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
+					<label for="forget-choice-2">Sometimes</label>
+
+<<<<<<< HEAD
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="forgetChoice">
                 <legend>Do you ever forget to take your medicine?</legend>
@@ -396,65 +714,91 @@
                 
                 <input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
                 <label for="forget-choice-2">Sometimes</label>
+=======
+					<input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
+					<label for="forget-choice-3">Never</label>
+				</fieldset>
+				</div>
+>>>>>>> master
 
-                <input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
-                <label for="forget-choice-3">Never</label>
-            </fieldset>
-            </div>
+				
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Are you careless at times about taking your medicine?</legend>
 
+<<<<<<< HEAD
             
             
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="carelessChoice">
                 <legend>Are you careless at times about taking your medicine?</legend>
+=======
+					<label for="careless-choice-1">Yes</label>
+					<input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+>>>>>>> master
 
-                <label for="careless-choice-1">Yes</label>
-                <input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+					<label for="careless-choice-2">Sometimes</label>
+					<input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
 
-                <label for="careless-choice-2">Sometimes</label>
-                <input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
-
-                <label for="careless-choice-3">Never</label>
-                <input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
-            </fieldset>
-            </div>
+					<label for="careless-choice-3">Never</label>
+					<input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
+				</fieldset>
+				</div>
 
 
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+
+<<<<<<< HEAD
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="feelWorse">
                 <legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+=======
+					<input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
+					<label for="feelWorse-choice-1">Yes</label>
+>>>>>>> master
 
-                <input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
-                <label for="feelWorse-choice-1">Yes</label>
+					<input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
+					<label for="feelWorse-choice-2">Sometimes</label>
 
-                <input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
-                <label for="feelWorse-choice-2">Sometimes</label>
+					<input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
+					<label for="feelWorse-choice-3">Never</label>
+				</fieldset>
+				</div>
 
-                <input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
-                <label for="feelWorse-choice-3">Never</label>
-            </fieldset>
-            </div>
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Thinking about the last week. How often have you not taken
+					your medicine?</legend>
 
+<<<<<<< HEAD
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="forgotWeek">
                 <legend>Thinking about the last week. How often have you not taken
                 your medicine?</legend>
+=======
+					<label for="notTaken-choice-0">Never</label>
+					<input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+>>>>>>> master
 
-                <label for="notTaken-choice-0">Never</label>
-                <input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+					<label for="notTaken-choice-1">1-2 Times</label>
+					<input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
 
-                <label for="notTaken-choice-1">1-2 Times</label>
-                <input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+					<label for="notTaken-choice-2">3-5 Times</label>
+					<input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
 
-                <label for="notTaken-choice-2">3-5 Times</label>
-                <input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+					<label for="notTaken-choice-3">6-10 Times</label>
+					<input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
 
-                <label for="notTaken-choice-3">6-10 Times</label>
-                <input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+					<label for="notTaken-choice-4">Over 10 Times</label>
+					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
 
-                <label for="notTaken-choice-4">Over 10 Times</label>
-                <input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+				</fieldset>
+				</div>
+			</form><!-- End Common Nonadherence Survey -->
 
+<<<<<<< HEAD
             </fieldset>
             </div>
             
@@ -466,6 +810,8 @@
             
         </form><!-- End Common Nonadherence Survey -->
         </div><!--/content- generel non adherance Survey -->
+=======
+>>>>>>> master
 
  
         
@@ -476,6 +822,7 @@
             <h1>Pain Medication Specific Survey</h1>
         </div>
 
+<<<<<<< HEAD
         <form id="opioidSurvey">
             <br><br>
             
@@ -534,6 +881,52 @@
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="emptyEarly">
                 <legend>Do you seem to run out of medication early?</legend>
+=======
+			<form style="padding:1%">
+				<br><br>
+				
+				<div data-role="fieldcontain">
+					<label for="painLevel">Rate Your Pain</label>
+					<input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
+				</div>
+
+				<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Whats you Favorite Snack?:</legend>
+					<input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
+					<label for="checkbox-1a">Cheetos</label>
+
+					<input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
+					<label for="checkbox-2a">Doritos</label>
+
+					<input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
+					<label for="checkbox-3a">Fritos</label>
+
+					<input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
+					<label for="checkbox-4a">Sun Chips</label>
+				</fieldset>
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="question-2">Question 2</label>
+					<textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="question-3">Question 3</label>
+					<textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="question-4">Question 4</label>
+					<textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
+				</div>
+
+				<div data-role="fieldcontain">
+					<label for="question-5">Question 5</label>
+					<textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
+				</div>
+>>>>>>> master
 
                 <label for="emptyEarly">Yes</label>
                 <input type="radio" name="emptyEarly-yes" id="emptyEarly-yes" value="Yes">
@@ -548,6 +941,7 @@
             
     
 
+<<<<<<< HEAD
             <div class="ui-body ui-body-b">
             <fieldset class="ui-grid-a">
                 <div class="ui-block"><button type="submit" id="opioidSurveySelectBtn" onclick="opioidSurveySubmit()">Submit</button></div>
@@ -738,5 +1132,15 @@
 
         </script>
 		
+=======
+				<div class="ui-body ui-body-b">
+				<fieldset class="ui-grid-a">
+					<div class="ui-block"><button type="submit" >Submit</button></div>
+				</fieldset>
+				</div>
+				
+			</form><!-- End Pain Med Nonadherence Survey -->
+		</div><!--/content-adherance Surveys -->		
+>>>>>>> master
 	</body>
 </html>
