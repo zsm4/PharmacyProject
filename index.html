@@ -56,7 +56,8 @@
 					//if we have a noncompliance array in local storage then add the noncompliance, otherwise create an array with the noncompliance and add it to local storage
 						var noncomplianceDate = new Date();
 						var medication = $("#medication").text();	//get medication name
-						
+						var medIsOpioid; // to track if med is opioid
+                    
 						if(JSON.parse(localStorage.getItem("noncomplianceArr" + medication)))	//if we already have a noncompliance array in local storage
 						{
 							var noncomplianceArr = JSON.parse(localStorage.getItem("noncomplianceArr" + medication));	//get noncompliance array from local storage
@@ -73,14 +74,21 @@
 								$.each(userJSON.medications, function(index, value){
 									if(value.name === medication)
 									{
-										value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
+										medIsOpioid = value.isOpioid; // set if is opioid
+                                        value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
 										localStorage.setItem("userJSON", JSON.stringify(userJSON));
 										//viewUserJSON();	//used for debugging
 									}
 								});
                                 
+
+                                //Set med to session storage
+                                sessionStorage.setItem('medication', medication);
+                                //Set med opioid status to session storage
+                                sessionStorage.setItem('opioid', medIsOpioid);
                                 // send to survey page after missing 3 times
-                                window.location = '#surveyPage';
+                               window.location = '#surveyPage';
+
 								// if medication is a pain med
 							}
 							else
@@ -234,6 +242,7 @@
 					var momentDate = moment().day(day);
 					date = momentDate.toDate();
 					
+
 					date.setHours(hour);
                     date.setMinutes(0);
 					date.setSeconds(0);
@@ -707,6 +716,7 @@
 					<input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
 					<label for="forget-choice-2">Sometimes</label>
 
+
 					<input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
 					<label for="forget-choice-3">Never</label>
 				</fieldset>
@@ -732,6 +742,7 @@
 				<div data-role="fieldcontain">
 				<fieldset data-role="controlgroup">
 					<legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
+
 
 					<input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
 					<label for="feelWorse-choice-1">Yes</label>
@@ -765,73 +776,292 @@
 					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
 
 				</fieldset>
-				</div>
-			</form><!-- End Common Nonadherence Survey -->
+        </div>
+            
+            <div class="ui-body ui-body-b">
+            <fieldset class="ui-grid-a">
+                <div class="ui-block"><button type="submit" id="generalSurveySelectBtn" onclick="generalSurveySubmit()">Submit</button></div>
+            </fieldset>
+            </div>
+            
+        </form><!-- End Common Nonadherence Survey -->
+        </div><!--/content- generel non adherance Survey -->
 
 
-        <br><br><br><br>
+ 
+        
         
         <!-- Start Pain Med Nonadherence Survey -->
-        <!-- hide if not a pain medication -->
-        <div data-role="header">
-            <h1>Pain Medication Specific Survey</h1>
-        </div>
+        <div data-role="page" id="opioidSurveyPage" data-title="opioidSurveyPage" data-theme="b">
 
-			<form style="padding:1%">
-				<br><br>
+          <div data-role="header">
+              <h1>Pain Medication Specific Survey</h1>
+          </div>
+
+        <form id="opioidSurvey">
+            <br><br>
+            
+            <div data-role="fieldcontain">
+                <label for="painLevelNow">Rate Your Pain <b>Right Now</b></label>
+                <input type="range" name="painLevelNow" id="painLevelNow" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+
+            
+            <div data-role="fieldcontain">
+                <label for="painLevel24h">Rate Your Pain Over the <b>Last 24 Hours</b></label>
+                <input type="range" name="painLevel24h" id="painLevel24h" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+            
+            
+            <div data-role="fieldcontain">
+                <label for="painLevelWeek">Rate Your Pain Over the <b>Last Week</b></label>
+                <input type="range" name="painLevelWeek" id="painLevelWeek" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+            
+            
+            <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" id="addictWorries">
+                <legend>Are you affraid of becoming addicted to you medication?</legend>
+
+                <label for="addictWorries">Yes</label>
+                <input type="radio" name="addictWorries-yes" id="addictWorries-yes" value="Yes">
+
+                <label for="addictWorries">Sometimes</label>
+                <input type="radio" name="addictWorries-sometimes" id="addictWorries-sometimes" value="Sometimes">
+
+                <label for="addictWorries">Never</label>
+                <input type="radio" name="addictWorries-never" id="addictWorries-never" value="Never" checked="checked">
+            </fieldset>
+            </div>
+            
+            
+            
+            <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" id="forgetOpioid">
+                <legend>When you are feeling better do you forget to take your medication?</legend>
+
+                <label for="forgetOpioid">Yes</label>
+                <input type="radio" name="forgetOpioid-yes" id="forgetOpioid-yes" value="Yes">
+
+                <label for="forgetOpioid">Sometimes</label>
+                <input type="radio" name="forgetOpioid-sometimes" id="forgetOpioid-sometimes" value="Sometimes">
+
+                <label for="forgetOpioid">Never</label>
+                <input type="radio" name="forgetOpioid-never" id="forgetOpioid-never" value="Never" checked="checked">
+            </fieldset>
+            </div>
+
+            
+            
+            <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup" id="emptyEarly">
+                <legend>Do you seem to run out of medication early?</legend>
+
+                <label for="emptyEarly">Yes</label>
+                <input type="radio" name="emptyEarly-yes" id="emptyEarly-yes" value="Yes">
+              
+              <label for="emptyEarly">Sometimes</label>
+                <input type="radio" name="emptyEarly-sometimes" id="emptyEarly-sometimes" value="Sometimes">
+
+                <label for="emptyEarly">Never</label>
+                <input type="radio" name="emptyEarly-never" id="emptyEarly-never" value="Never" checked="checked">
+            </fieldset>
+            </div>
+			
+
+            <div class="ui-body ui-body-b">
+            <fieldset class="ui-grid-a">
+                <div class="ui-block"><button type="submit" id="opioidSurveySelectBtn" onclick="opioidSurveySubmit()">Submit</button></div>
+            </fieldset>
+            </div>
+            
+        </form><!-- End Pain Med Nonadherence Survey -->
+        </div><!--/content-opioid non adherance Surveys -->
+
+        
+        
+        <script>
+            
+            function sendToSruvey(){
+                
+                
+                
+            }
+            
+            function generalSurveySubmit(){
+                // create array to store survey data
+                var surveyArray = new Array[];
+                // add med name
+                surveyArray.push(sessionStorage.getItem('medication'));
+                // add date/Time
+                surveyArray.push(new Date());
+                
+                // get data from fields, validate, add to array
+                $('#generalSurvey').validate({
+                    rules: {
+                        awareMissed: {
+                            required: true
+                        },
+                        reason: {
+                            required: true
+                        },
+                        sideEffects: {
+                            required: true
+                        },
+                        forgetChoice: {
+                            required: true
+                        },
+                        carelessChoice: {
+                            required: true
+                        },
+                        feelWorse: {
+                            required: true
+                        },
+                        forgotWeek: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        awareMissed: {
+                            required: "Please check YES or NO."
+                        },
+                        reason: {
+                            required: "Please enter your reason."
+                        },
+                        sideEffects: {
+                            required: "Please enter your sideffects or type none."
+                        },
+                        forgetChoice: {
+                            required: "Please select a choice."
+                        },
+                        carelessChoice: {
+                            required: "Please select a choice."
+                        },
+                        feelWorse: {
+                            required: "Please select a choice."
+                        },
+                        forgotWeek: {
+                            required: "Please select a choice."
+                        }
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parent().prev());
+                    },
+                    // BELOW MIGHT BE *WRONG*
+                    submitHandler: function (form) {
+                        $(':mobile-pagecontainer').pagecontainer('change', '#success', {
+                            reload: false
+                        });
+                        return false;
+                    }
+                });// end validate form
+                
+                // turn into json and send (or) attach to user
+                var surveyResults = 'genSurveyResults: ';
+                surveyResults += $('generalSurvey').serialize();
+                surveyArray.push(surveyResults);
+                
+                
+                // save survey to local storage
+                localStorage.setItem('Survey', surveyArray);
+                
+                // if opioid, send to next survey page
+                var isOpioid =  sessionStorage.getItem('opioid');
+                
+                // send to opioid survey page if opioid
+                if(isOpioid){
+                    window.location = '#opioidSurveyPage';
+                }else{
+                    //return to main page
+                    window.location = '#homepage';
+                }
+                
+            }// end general survey submit funtion
+            
+            
+            
+            
+            
+            
+            function opioidSurveySubmit(){
+                var storedSurvey = new Array[];
+                storedSurvey = sessionStorage.getItem('Survey');
+                
+                // get data from fields, validate
+                                // get data from fields, validate, add to array
+                $('#generalSurvey').validate({
+                    rules: {
+                        painLevelNow: {
+                            required: true
+                        },
+                        painLevel24h: {
+                            required: true
+                        },
+                        painLevelWeek: {
+                            required: true
+                        },
+                        addictWorries: {
+                            required: true
+                        },
+                        forgetOpioid: {
+                            required: true
+                        },
+                        emptyEarly: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        painLevelNow: {
+                            required: "Please slect a value."
+                        },
+                        painLevel24h: {
+                            required: "Please slect a value."
+                        },
+                        painLevelWeek: {
+                            required: "Please slect a value."
+                        },
+                        addictWorries: {
+                            required: "Please slect a value."
+                        },
+                        forgetOpioid: {
+                            required: "Please slect a value."
+                        },
+                        emptyEarly: {
+                            required: "Please slect a value."
+                        }
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parent().prev());
+                    },
+                    // BELOW MIGHT BE *WRONG*
+                    submitHandler: function (form) {
+                        $(':mobile-pagecontainer').pagecontainer('change', '#success', {
+                            reload: false
+                        });
+                        return false;
+                    }
+                });// end validate form
+                
+                
+                
+                
+                
+                // turn into json and send (or) attach to user
+                var opioidSurveyResults = 'opioidSurveyResults: ';
+                surveyResults += $('opioidSurvey').serialize();
+                surveyArray.push(surveyResults);
+                
+                // return to main page
+                window.location = '#homepage';
+
+            }// end opioid survey submit function
+            
+
+        </script>
+		
+
+
 				
-				<div data-role="fieldcontain">
-					<label for="painLevel">Rate Your Pain</label>
-					<input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
-				</div>
-
-				<div data-role="fieldcontain">
-				<fieldset data-role="controlgroup">
-					<legend>Whats you Favorite Snack?:</legend>
-					<input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
-					<label for="checkbox-1a">Cheetos</label>
-
-					<input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
-					<label for="checkbox-2a">Doritos</label>
-
-					<input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
-					<label for="checkbox-3a">Fritos</label>
-
-					<input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
-					<label for="checkbox-4a">Sun Chips</label>
-				</fieldset>
-				</div>
-
-				<div data-role="fieldcontain">
-					<label for="question-2">Question 2</label>
-					<textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
-				</div>
-
-				<div data-role="fieldcontain">
-					<label for="question-3">Question 3</label>
-					<textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
-				</div>
-
-				<div data-role="fieldcontain">
-					<label for="question-4">Question 4</label>
-					<textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
-				</div>
-
-				<div data-role="fieldcontain">
-					<label for="question-5">Question 5</label>
-					<textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
-				</div>
-
-
-
-
-				<div class="ui-body ui-body-b">
-				<fieldset class="ui-grid-a">
-					<div class="ui-block"><button type="submit" >Submit</button></div>
-				</fieldset>
-				</div>
-				
-			</form><!-- End Pain Med Nonadherence Survey -->
-		</div><!--/content-adherance Surveys -->		
 	</body>
 </html>
+		
