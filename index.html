@@ -3,23 +3,21 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="./js/jquery-2.1.4.min.js"></script>
+		<!-- <link rel="stylesheet" href="./js/themes/basic.css"> -->
         <link rel="stylesheet" href="./js/themes/UPMC_Colors.css">
 		<link rel="stylesheet" href="./js/themes/jquery.mobile.icons.min.css">
-        
 		<link rel="stylesheet" type="text/css" href="./js/jquery.mobile-1.4.5/jquery.mobile.structure-1.4.5.min.css">
 		<script src="./js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="./cordova.js"></script>
-		<script src="./js/moment.min.js"></script>
 		
 	
 		<script>
-			$(function(){
-				//setup notificationID if it's not in local storage
-				if(!localStorage.getItem("notificationID"))
-				{
-					localStorage.setItem("notificationID", 1);
-				}
-
+			$(document).ready(function(){
+				//must keep track of current index for notification id's
+				var currentPostponeNotificationID;
+				
+				//must keep track of our notifications so we can close them
+				var notificationIdList;
 				
 				//if JSON is not in local storage, bring it into local storage from json file
 				//currently resetting json everytime for debugging
@@ -35,9 +33,7 @@
 				{
 					userJSON = JSON.parse(localStorage.getItem("userJSON"));
 				}
-
-				//viewUserJSON();	//debugging
-
+				viewUserJSON();	//debugging
 				
 				//handle button clicks for takeMedicationPage
 				//took medication
@@ -50,6 +46,7 @@
 					//if we have a noncompliance array in local storage then add the noncompliance, otherwise create an array with the noncompliance and add it to local storage
 						var noncomplianceDate = new Date();
 						var medication = $("#medication").text();	//get medication name
+                        var medIsOpioid; // to track if med is opioid
 						
 						if(JSON.parse(localStorage.getItem("noncomplianceArr" + medication)))	//if we already have a noncompliance array in local storage
 						{
@@ -60,27 +57,32 @@
 							{
 								//write noncompliance to json (THIS IS WHERE YOU WOULD POST TO THE API)
 								localStorage.setItem("noncomplianceArr" + medication, null);	//set noncompliance array to null in local storage
-								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your Insurance Company and Pharmacist.");	//alert user they have not complied 3 times
+								alert("You missed 3 doses of " + medication + ".  A noncompliance report has been sent to your insurance company and Pharmacist.");	//alert user they have not complied 3 times
 								
 								//search and find correct medication in json, then push the noncompliance array to it and save to local storage
 								var index;
 								$.each(userJSON.medications, function(index, value){
 									if(value.name === medication)
 									{
+                                        medIsOpioid = value.isOpioid; // set if is opioid
 										value.noncompliances.push(noncomplianceArr);	//push noncompliance to json
 										localStorage.setItem("userJSON", JSON.stringify(userJSON));
-										//viewUserJSON();	//used for debugging
+										viewUserJSON();
 									}
 								});
                                 
+                                //Set med to session storage
+                                sessionStorage.setItem('medication', medication);
+                                //Set med opioid status to session storage
+                                sessionStorage.setItem('opioid', medIsOpioid);
                                 // send to survey page after missing 3 times
-                                window.location = '#surveyPage';
-								// if medication is a pain med
++                               window.location = '#surveyPage';
+								
 							}
 							else
 							{
 								localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));
-								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
+								alert("You missed 2 doses of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 1 more dose.");	//alert user they have not complied 2 time
 							}
 						}
 						else	//if we do not have a noncompliance array in local storage
@@ -88,7 +90,7 @@
 							var noncomplianceArr = [];	//create noncompliance array
 							noncomplianceArr.push(noncomplianceDate);	//add noncompliance date
 							localStorage.setItem("noncomplianceArr" + medication, JSON.stringify(noncomplianceArr));	//write to local storage
-							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your Insurance Company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
+							alert("You missed a dose of " + medication + ".  A noncompliance report will be sent to your insurance company and Pharmacist if you miss 2 more doses.");	//alert user they have not complied 1 time
 						}
 						
 				});
@@ -100,21 +102,27 @@
 					var medication = $("#medication").text();	//get medication name
 					var medicationText = $("#medicationText").text();
 					
+					if(!currentPostponeNotificationID)
+					{
+						currentPostponeNotificationID = 1000;	//keep our currentPostponeNotificationIDs very high and make sure not to clear any notifications with ID > 100 when we refresh our notifications
+					}
+					
 					oneHour = new Date(now.getTime() + 60 * 60000);	//increase by one hour(3600 secs)
 					
-					var notificationID = localStorage.getItem("notificationID");
+					alert(now);
+					alert(oneHour);
 					
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					cordova.plugins.notification.local.schedule({
-						id: notificationID,
+						id: currentPostponeNotificationID,
 						title: medication,
-						text: medicationText,
+						text: medicationText + " again",
 						at: oneHour,
+						every: 1,
 						sound: sound
 					});
 					
-					notificationID++;
-					localStorage.setItem("notificationID", notificationID);
+					currentNotificationID++;	//increase our current notificationID
 				});
 				
 				//setup medication page
@@ -130,14 +138,13 @@
 						var meal = value.schedule.meal;
 						var unitsToTake = value.schedule.unitPerDose;
 						var timesToTake = value.schedule.timesForDose;
-                        
 						
-						$("#medications").append("<p><h2>Medication: " + medicationName + "</h2></p>");
-						$("#medications").append("<p><b>Filled:</b> " + filledDate + "</p>");
-						$("#medications").append("<p><b>Picked Up:</b> " + pickUpDate + "</b</p>");
-						$("#medications").append("<p><b>Dose:</b> " + dose + "</p>");
-						$("#medications").append("<p><b>Refills:</b> " + refills + "</p>");
-						$("#medications").append("<p><b>Take:</b> " + unitsToTake + " " + meal + " meal</p>");
+						$("#medications").append("<p>Medication: " + medicationName + "</p>");
+						$("#medications").append("<p>Filled: " + filledDate + "</p>");
+						$("#medications").append("<p>Picked Up: " + pickUpDate + "</p>");
+						$("#medications").append("<p>Dose: " + dose + "</p>");
+						$("#medications").append("<p>Refills: " + refills + "</p>");
+						$("#medications").append("<p>Take: " + unitsToTake + " " + meal + " meal</p>");
 						
 						var schedule = "";
 						$.each(timesToTake, function(key, weekdayTimeCode){
@@ -151,7 +158,7 @@
 								schedule += ", " + weekdayTime;
 							}
 						});
-						$("#medications").append("<p><b>Schedule:</b> " + schedule + "</p>");
+						$("#medications").append("<p>Schedule: " + schedule + "</p>");
 						$("#medications").append("</br>");
 					});
 				});
@@ -160,32 +167,33 @@
 				document.addEventListener('deviceready', function () {
 					//set action handlers for notification actions when device ready
 					setActionHandlers();
-					
-					//set up notifications
-					cordova.plugins.notification.local.hasPermission(function (granted) {	
-						if(granted)	//if we have permission, then set up notifications
-						{
-							cancelAllNotifications();
-							testNotification();
-						}
-						else	//else, ask for permission
-						{
-							cordova.plugins.notification.local.registerPermission(function (granted) {
-								if(granted)	//if user gives us permission set up notifications
-								{
-									cancelAllNotifications();
-									testNotification();
-								}
-								else	//else, inform user they must give us access to notifications
-								{
-									alert("You must give Local-Notification permission for this app to function properly.");
-								}
-							});
-						}
+
+					$("#testNotification").on("click", function(){
+						cordova.plugins.notification.local.hasPermission(function (granted) {	
+							if(granted)	//if we have permission, then set up notifications
+							{
+								cancelAllNotifications();
+								testNotification();
+							}
+							else	//else, ask for permission
+							{
+								cordova.plugins.notification.local.registerPermission(function (granted) {
+									if(granted)	//if user gives us permission set up notifications
+									{
+										cancelAllNotifications();
+										testNotification();
+									}
+									else	//else, inform user they must give us access to notifications
+									{
+										alert("You must give Local-Notification permission for this app to function properly.");
+									}
+								});
+							}
+						});
 					});
-					
 				}, false);
-                
+				
+				
 				//set event handlers for buttons
 				function setActionHandlers()
 				{
@@ -208,82 +216,45 @@
 				//set local notification. Needs modified so it sets local notification based off of JSON
 				function testNotification()
 				{
-                    var medNum = userJSON.medications.length;	//number of meds
-                    			
-                    for(var i=0;i<medNum;i++){
-                        for(var j=0;j<userJSON.medications[i].schedule.timesForDose.length;j++){
-                            makeWeeklyNotification(i,dayCode(userJSON.medications[i].schedule.timesForDose[j].substring(0,2)), userJSON.medications[i].schedule.timesForDose[j].substring(2,4), userJSON.medications[i].weeks);
-                        }
-                    }
-				}
-                
-                //function to make a notification to repeat a couple of weeks
-                function makeWeeklyNotification(medIndex, day, hour, weeks){
-					var date = new Date();	//current date
-
-					if(day < date.getDay() + 1){ //if the day to schedule is before today
-						day = day + 7;
-					}	
-					
-					var momentDate = moment().day(day);
-					date = momentDate.toDate();
-					
-					date.setHours(hour);
-                    date.setMinutes(0);
-					date.setSeconds(0);
-					
+					var userJSON = $.getJSON("./UserJSON", function(data){
+						alert(data.firstName);
+					}); 
+				
+					if(!notificationIdList)
+					{
+						notificationIdList = [];
+					}
+				
+					var now = new Date();
+                    fiveSec = new Date(now + 5 * 1000);
 					var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
 					
-					for(var i=0; i<weeks; i++)
-					{		
-						var notificationID = localStorage.getItem("notificationID");
-						
-						cordova.plugins.notification.local.schedule({
-                            id: notificationID,
-                            title: userJSON.medications[medIndex].name,
-                            text: 'Take '+userJSON.medications[medIndex].schedule.unitPerDose+' x '+userJSON.medications[medIndex].dose,
-							at: date,
-							sound: sound
-                        }); 
-
-						notificationID++; 
-						localStorage.setItem("notificationID", notificationID);
-						
-						momentDate.add(1, "weeks");
-						date = momentDate.toDate();
-						date.setHours(hour);
-						date.setMinutes(0);
-						date.setSeconds(0);
-					}
-                }
-                
-				//convert our day code to Date day code (ex. MO -> 1)
-                function dayCode(day){
-                    switch(day){
-						case "MO": 
-							day = 1;
-							break;
-						case "TU": 
-							day = 2;
-							break;
-						case "WE": 
-							day = 3;
-							break;
-						case "TH": 
-							day = 4;
-							break;
-						case "FR": 
-							day = 5;
-							break;
-						case "SA": 
-							day = 6;
-							break;
-						case "SU": 
-							day = 0;
-							break;	
-					}
-                    return day;
-                }
+					var idIndex = 1;
+					
+					cordova.plugins.notification.local.schedule({
+						id: idIndex,
+						title: 'Tylenol',
+						text: 'Take 2 x 200 mg doses',
+						at: fiveSec,
+						every: 1,
+						sound: sound
+					});
+					
+					notificationIdList.push(idIndex);
+					idIndex++;
+					
+					cordova.plugins.notification.local.schedule({
+						id: idIndex,
+						title: 'Benadryl',
+						text: 'Take 3 x 100 mg doses',
+						at: fiveSec,
+						every: 1,
+						sound: sound
+					});
+					
+					notificationIdList.push(idIndex);
+					idIndex++;
+				}
 				
 				//convert our weekday time code(ex. MO04) to a weekday time(ex. Monday 4:00AM)
 				function getWeekdayTime(weekdayTimeCode)
@@ -347,207 +318,21 @@
 					var userJSONString = localStorage.getItem("userJSON");
 					alert(userJSONString);
 				}
-
-                
-				$(document).on("pagebeforeshow", "#removeMedPage", function(){
-					var medicationList = userJSON.medications;
-                    var medicCount = 0;
-					$("#removeMedList").empty();
-					$.each(medicationList, function(key, value){
-						var medicationName = value.name;
-                        var prescribedStatus = value.isPerscribed;
-						console.log(medicationName+" "+prescribedStatus);
-                        
-                        
-                        //if we dont care about prescribed status
-                        $("#removeMedList").append('<li data-icon="delete" value="' + medicCount + '" > <a href="#">' + medicationName + '</li>');
-                        
-                        // if we do care about prescribed status
-                        /*if(prescribedStatus == true){
-                            $("#removeMedList").append('<li  value="' + medicCount + '">' + medicationName + '</li>');
-							console.log(medicationName);
-                        }*/
-                        
-                        medicCount++; 
-
-                    });
-                    $('#removeMedList').listview('refresh');
-                });
-                
-                $('#removeMedPage').bind('pageinit', function() {
-                    if($(".removeMedList").is(':empty')) {
-                        alert("There are no medications that can be removed.");
-                        //$.mobile.changePage("#homepage");
-                    } else {
-                       //$('.removeMedList').selectmenu('refresh', true);
-					   var select='';
-                        //$("select#removeMedList").append(select).selectmenu("refresh");
-
-						console.log("hi!!!");
-                    }
-                });
-                
-                function removeMedicationFromJSON(){
-                    
-                    medIndex = jQuery("#removeMedList option:selected").val();
-                    userJSON.medications.splice(medIndex,1);
-                    localStorage.setItem("userJSON", JSON.stringify(userJSON));
-                    alert("The selected medication has been successfully removed.");
-                    $.mobile.changePage("#homepage");
-                    
-                }
-                $("#removeMedButton").click(removeMedicationFromJSON);
-                
-                $('.dayTimePrompt').hide();
-                
-                function addDayTimeButtonClick() {
-                    var daySelectMenu = $("select#addDayChoice");
-                    var timeSelectMenu = $("select#addTimeChoice");
-                    daySelectMenu[0].selectedIndex = 0;
-                    daySelectMenu.selectmenu("refresh");
-                    timeSelectMenu[0].selectedIndex = 0;
-                    timeSelectMenu.selectmenu("refresh");
-                    $('.dayTimePrompt').show();
-                    $('.addDayTimeButton').hide();
-                    $('.addMedCancelSubmit').hide();
-                }
-                
-                $("#addDayTimeButton").click(addDayTimeButtonClick);
-                
-                function cancelAddDayTimeButtonClick() {
-                    $('.dayTimePrompt').hide();
-                    $('.addDayTimeButton').show();
-                    $('.addMedCancelSubmit').show();
-                }
-                
-                $("#cancelDayTime").click(cancelAddDayTimeButtonClick);
-                
-                var daysAndTimes = new Array();
-
-                
-                function submitAddDayTimeButton() {
-                    var dayAdded;
-                    var timeAdded;
-                    if($("#addDayChoice option:selected").val() == "selectDay") {
-                        alert("Please select a day to add.");
-                    } else if($("#addTimeChoice option:selected").val() == "selectTime") {
-                        alert("Please select a time to add.");
-                    } else {
-                        dayAdded = $("#addDayChoice option:selected").val();
-                        timeAdded = $("#addTimeChoice option:selected").val();
-                        var alreadyExists = false;
-                        $.each( daysAndTimes, function(index, value) {
-                            if( value == dayAdded + timeAdded) {
-                                alert("This day and time has already been added to your schedule. Please enter another day and time if necessary.");
-                                alreadyExists = true;
-                            }
-                        });
-                        if(alreadyExists == false) {
-                            daysAndTimes.push(dayAdded + timeAdded);
-                            $("#scheduleListEntries").append("<li>" + $("#addDayChoice option:selected").text() + " at " + $("#addTimeChoice option:selected").text() + "</li>");
-                            $("#scheduleListEntries").listview("refresh");
-                            $('.dayTimePrompt').hide();
-                            $('.addDayTimeButton').show();
-                            $('.addMedCancelSubmit').show();
-                        }
-                    }
-                }
-                
-                $("#submitDayTime").click(submitAddDayTimeButton);
-                
-                function addMedicationToJSON(){
-                    var medName = $('#medName').val();
-                    function format(inputDate) {
-                        var date;
-                        var year = inputDate.substr(2, 2);
-                        console.log(year);
-                        var month = inputDate.substr(5, 2);
-                        console.log(month);
-                        var day = inputDate.substr(8, 2);
-                        console.log(day);
-                        return date = month + "/" + day + "/" + year;
-                    }
-                    var dateFilled = $('#filledDate').val();
-                    dateFilled = format(dateFilled);
-                    var datePickedUp = $('#pickedUpDate').val();
-                    datePickedUp = format(datePickedUp);
-                    var doseAmount = $('#doseAmount').val();
-                    var doseNumber = $('#doseNumber').val();
-                    var refills = $('#refills').val();
-                    var weeks = $('#weeks').val();
-                    var meal = $('#meal').val();
-                    if(medName.length < 1 || dateFilled.length < 1 || dateFilled.text == "mm/dd/yyyy" || datePickedUp.length < 1 || datePickedUp.text == "mm/dd/yyyy" || doseAmount.length < 1 || doseNumber.length < 1 || refills.length < 1 || weeks.length < 1 || meal == "noMealSelected") {
-                        alert("Please confirm that all information is entered correctly.");
-                    } else if(daysAndTimes.length == 0) {
-                        alert("Please add at least one day and time to take the medication you wish to add.");
-                    } else {
-                        var newMedRecord = '{';
-                        newMedRecord += '"name": "' + medName + '", ';
-                        newMedRecord += '"filledDate": "' + dateFilled + '", ';
-                        newMedRecord += '"pickUpDate": "' + datePickedUp + '", ';
-                        newMedRecord += '"dose": "' + doseAmount + '", ';
-                        newMedRecord += '"refills": ' + refills + ', ';
-                        newMedRecord += '"weeks": ' + weeks + ', ';
-                        newMedRecord += '"isPerscribed": false, ';
-                        newMedRecord += '"schedule": {';
-                        newMedRecord += '"unitPerDose": ' + doseNumber + ', ';
-                        newMedRecord += '"timesForDose": [';
-                        newMedRecord += '"' + daysAndTimes[0] + '"' ;
-                        if(daysAndTimes.length > 1) {
-                            for(var i = 1; i < daysAndTimes.length; i++){
-                                newMedRecord += ', "' + daysAndTimes[i] + '"';
-                            }
-                        }
-                        newMedRecord += '], ';
-                        newMedRecord += '"meal": "' + meal + '"';
-                        newMedRecord += '}, ';
-                        newMedRecord += '"noncompliances": ';
-                        newMedRecord += '[';
-                        newMedRecord += '';
-                        newMedRecord += ']';
-                        newMedRecord += '}';
-                        var toPushToJSON = JSON.parse(newMedRecord);
-                        userJSON.medications.push(toPushToJSON);
-                        newMedRecord = JSON.stringify(toPushToJSON);
-                        localStorage.setItem("userJSON", JSON.stringify(userJSON));
-                        alert("The medication has been successfully added.");
-                        $.mobile.changePage("#homepage");
-                    }
-                    
-                }
-                $("#addMedSubmit").click(addMedicationToJSON);
-                console.log(userJSON);
-                
-				$(document).on("pagebeforeshow", "#addMedPage", function(){
-                    $("#scheduleListEntries").empty();
-                });
-                
-            });
-            
+			});
 		</script>
 	</head>
-    
-    <style>
-        .button{width:90%;display:inline-block;text-decoration: none;}
-		
-		.ui-header .ui-title { margin-left: 1em; margin-right: 1em; }
-    </style>
 	
 	<body>		
 	
 		<!-- Homepage -->
-		<div data-role="page" id="homepage" data-title="Homepage" data-theme="b" \>
+		<div data-role="page" id="homepage" data-title="Homepage" data-theme="b">
 			<div data-role="header">
 				<h1>PharmacyPro</h1>
 			</div>
-      
-	  <div style="text-align:center">
-		  <a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
-		  <a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
-		  <a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
-		  <a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
-	  </div>    
-    </div>
+			<button data-role="button" id="testNotification">Local-Notification Test</button>
+			<a data-role="button" id="viewMedications" href="#medicationPage">View Medications</a>
+            <a data-role="button" id="addMedication" href="#addMedPage">Add New Medication</a>
+		</div>
 		
 		<!-- Medication Information -->
 		<div data-role="page" id="medicationPage" data-title="Medication Page">
@@ -555,9 +340,7 @@
 				<a id="btnBack" href="#homepage">Back</a>
 				<h1>Medications</h1>
 			</div>
-			<div data-role="main" class="ui-body-a">
-				<div id="medications" data-role="main" class="ui-body-a" style="padding:1%"></div>
-			</div>
+			<div id="medications" data-role="main" class="ui-body-a"></div>
 		</div>
     
 		
@@ -566,119 +349,28 @@
 			<div data-role="header">
 				<h1>Take Medication</h1>
 			</div>
-				<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
-				<br>
-				<div class="ui-grid-b my-breakpoint">
-					<div class="ui-block-a charBlock"><a data-role="button" id="compliance" href="#homepage">Yes</a></div>
-					<div class="ui-block-b charBlock"><a data-role="button" id="noncompliance" href="#homepage">No</a></div>
-					<div class="ui-block-c charBlock"><a data-role="button" id="later" href="#homepage">In an Hour</a></div>
-				</div>
+			<div id="medicationInfo" data-role="main" class="ui-body-a"></div>
+			<br>
+			<div class="ui-grid-b my-breakpoint">
+				<div class="ui-block-a charBlock"><button data-role="button" id="compliance">Yes</button></div>
+				<div class="ui-block-b charBlock"><button data-role="button" id="noncompliance">No</button></div>
+				<div class="ui-block-c charBlock"><button data-role="button" id="later">In an Hour</button></div>
+			</div>
 		</div>
         
-
-        <!-- Add New Medication Page -->
-        <div data-role="page" id="addMedPage" data-title="Add New Medication Page">
-            <div data-role="header">
-                <a id="btnBack" href="#homepage">Back</a>
-                <h1>Add New Medication</h1>
-            </div>
-            <div data-role="main" style="padding:2%;">
-                <label for="medName"><b>Name:</b></label>
-                <input type="text" name="medName" id="medName" placeholder="E.g. Acetaminophen" required/>
-                <label for="filledDate"><b>Date Filled:</b></label>
-                <input type="text" name="filledDate" id="filledDate" value="" placeholder="E.g. 02/28/2017" onfocus="(this.type='date')" required/>
-                <label for="pickedUpDate"><b>Date Picked Up:</b></label>
-                <input type="text" name="pickedUpDate" id="pickedUpDate" value="" placeholder="E.g. 03/01/2017" onfocus="(this.type='date')" required/>
-                <label for="doseAmount"><b>Dose Amount:</b></label>
-                <input type="text" name="doseAmount" id="doseAmount" placeholder="E.g. 325 mg" required/>
-                <label for="doseNumber"><b>Number of Doses:</b></label>
-                <input type="number" name="doseNumber" id="doseNumber" placeholder="E.g. Take 2 with meal" required />
-                <label for="refills"><b>Refills:</b></label>
-                <input type="number" name="refills" id="refills" placeholder="E.g. 1" required/>
-                <label for="weeks"><b>Number of Weeks:</b></label>
-                <input type="number" name="weeks" id="weeks" placeholder="E.g. 2" required/>
-                <label for="meal"><b>Meal:</b></label>
-
-                <p><b>Schedule</b></p>
-
-                <div class="scheduleList" id="scheduleList">
-                    <ul data-role="listview" name="scheduleListEntries" id="scheduleListEntries"></ul>
-                </div>
-                <div class="dayTimePrompt" id="dayTimePrompt">
-                    <select name="addDayChoice" id="addDayChoice">
-                        <option value="selectDay">Select Day</option>
-                        <option value="SU">Sunday</option>
-                        <option value="MO">Monday</option>
-                        <option value="TU">Tuesday</option>
-                        <option value="WE">Wednesday</option>
-                        <option value="TH">Thursday</option>
-                        <option value="FR">Friday</option>
-                        <option value="SA">Saturday</option>
-                    </select>
-                    <select name="addTimeChoice" id="addTimeChoice">
-                        <option value="selectTime">Select Time</option>
-                        <option value="00">12:00 AM</option>
-                                <script>
-                                    for(hour = 1; hour < 12; hour++) {
-                                        $("#addTimeChoice").append('<option value="0' + hour + '">' + hour + ':00 AM</option>');
-                                    }
-                                </script>
-                                <option value="12">12:00 PM</option>
-                                <script>
-                                    uiHour = 1;
-                                    for(hour = 13; hour < 24; hour++) {
-                                        $("#addTimeChoice").append('<option value="' + hour + '">' + uiHour + ':00 PM</option>');
-                                        uiHour++;
-                                    }
-                                </script>
-                    </select>
-                    
-                    <a data-role="button" id="cancelDayTime">Cancel Add Day/Time</a>
-                    <a data-role="button" id="submitDayTime">Submit Day/Time</a>
-                </div>
-                <div class="addDayTimeButton" id="addDayTimeButton">
-                    <a data-role="button" id="addDayTime">Add Day/Time</a>
-                </div>
-                <div class="addMedCancelSubmit" id="addMedCancelSubmit">
-                    <br>
-                    <a data-role="button" id="cancelAddButton" href="#homepage">Cancel</a>
-                    <a data-role="button" id="addMedSubmit">Add Medication</a>
-                </div>
-			</div>
-        </div>
-
         
-        <!-- Remove Medication Page -->
-        <section data-role="page" id="removeMedPage" data-title="Remove Medication Page">
-            <div data-role="header">
-                <a id="btnBack" href="#homepage">Back</a>
-                <h1>Remove Medication</h1>
-            </div>
-            
-            <div id="removeMedicationContent" class="ui-content" role="main">
-                <label for="removeMedList">Select Medication to Remove:</label>
-                
-                <ul data-role="listview" data-inset="true"  id="removeMedList" class="ui-nodisc-icon ui-alt-icon">
-                
-                </ul>
-				
-                <a data-role="button" id="cancelRemoveButton" href="#homepage">Cancel</a>
-                <a data-role="button" id="removeMedButton">Remove Medication</a>
-            </div>
-        </section>
-    
-    <!-- Survey Page -- >
-    <!-- Nonadherence Survey -->
+        <!-- Survey Page -- >
+              <!-- Nonadherence Survey -->
+
     <div data-role="page" id="surveyPage" data-title="surveyPage" data-theme="b">
         <div data-role="header">
             <h1>Nonadherence Survey</h1>
-            <a id="btnBack" href="#homepage">Back</a>
         </div>
 
-        <form style="padding:1%">
+        <form id="generalSurvey">
             <div data-role="fieldcontain">
-                <label for="slider2">Do you know that you have not taken your medication?</label>
-                <select name="slider2" id="slider2" data-role="slider">
+                <label for="awareMissed">Do you know that you have not taken your medication?</label>
+                <select name="awareMissed" id="awareMissed" data-role="slider">
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
             </select>
@@ -696,7 +388,7 @@
 
 
             <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
+            <fieldset data-role="controlgroup" id="forgetChoice">
                 <legend>Do you ever forget to take your medicine?</legend>
                 
                 <input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
@@ -713,7 +405,7 @@
             
             
             <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
+            <fieldset data-role="controlgroup" id="carelessChoice">
                 <legend>Are you careless at times about taking your medicine?</legend>
 
                 <label for="careless-choice-1">Yes</label>
@@ -729,7 +421,7 @@
 
 
             <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
+            <fieldset data-role="controlgroup" id="feelWorse">
                 <legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
 
                 <input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
@@ -744,7 +436,7 @@
             </div>
 
             <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
+            <fieldset data-role="controlgroup" id="forgotWeek">
                 <legend>Thinking about the last week. How often have you not taken
                 your medicine?</legend>
 
@@ -765,71 +457,286 @@
 
             </fieldset>
             </div>
+            
+            <div class="ui-body ui-body-b">
+            <fieldset class="ui-grid-a">
+                <div class="ui-block"><button type="submit" id="generalSurveySelectBtn" onclick="generalSurveySubmit()">Submit</button></div>
+            </fieldset>
+            </div>
+            
         </form><!-- End Common Nonadherence Survey -->
+        </div><!--/content- generel non adherance Survey -->
 
-        <br><br><br><br>
+ 
+        
         
         <!-- Start Pain Med Nonadherence Survey -->
-        <!-- hide if not a pain medication -->
+        <div data-role="page" id="opioidSurveyPage" data-title="opioidSurveyPage" data-theme="b">
         <div data-role="header">
             <h1>Pain Medication Specific Survey</h1>
         </div>
 
-        <form style="padding:1%">
+        <form id="opioidSurvey">
             <br><br>
             
             <div data-role="fieldcontain">
-                <label for="painLevel">Rate Your Pain</label>
-                <input type="range" name="painLevel" id="painLevel" value="5" min="0" max="10" data-highlight="true"  />
+                <label for="painLevelNow">Rate Your Pain <b>Right Now</b></label>
+                <input type="range" name="painLevelNow" id="painLevelNow" value="5" min="0" max="10" data-highlight="true"  />
             </div>
 
+            
             <div data-role="fieldcontain">
-            <fieldset data-role="controlgroup">
-                <legend>Whats you Favorite Snack?:</legend>
-                <input type="checkbox" name="checkbox-1a" id="checkbox-1a" class="custom" />
-                <label for="checkbox-1a">Cheetos</label>
+                <label for="painLevel24h">Rate Your Pain Over the <b>Last 24 Hours</b></label>
+                <input type="range" name="painLevel24h" id="painLevel24h" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+            
+            
+            <div data-role="fieldcontain">
+                <label for="painLevelWeek">Rate Your Pain Over the <b>Last Week</b></label>
+                <input type="range" name="painLevelWeek" id="painLevelWeek" value="5" min="0" max="10" data-highlight="true"  />
+            </div>
+            
+            
+            <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" id="addictWorries">
+                <legend>Are you affraid of becoming addicted to you medication?</legend>
 
-                <input type="checkbox" name="checkbox-2a" id="checkbox-2a" class="custom" />
-                <label for="checkbox-2a">Doritos</label>
+                <label for="addictWorries">Yes</label>
+                <input type="radio" name="addictWorries-yes" id="addictWorries-yes" value="Yes">
 
-                <input type="checkbox" name="checkbox-3a" id="checkbox-3a" class="custom" />
-                <label for="checkbox-3a">Fritos</label>
+                <label for="addictWorries">Sometimes</label>
+                <input type="radio" name="addictWorries-sometimes" id="addictWorries-sometimes" value="Sometimes">
 
-                <input type="checkbox" name="checkbox-4a" id="checkbox-4a" class="custom" />
-                <label for="checkbox-4a">Sun Chips</label>
+                <label for="addictWorries">Never</label>
+                <input type="radio" name="addictWorries-never" id="addictWorries-never" value="Never" checked="checked">
+            </fieldset>
+            </div>
+            
+            
+            
+            <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" id="forgetOpioid">
+                <legend>When you are feeling better do you forget to take your medication?</legend>
+
+                <label for="forgetOpioid">Yes</label>
+                <input type="radio" name="forgetOpioid-yes" id="forgetOpioid-yes" value="Yes">
+
+                <label for="forgetOpioid">Sometimes</label>
+                <input type="radio" name="forgetOpioid-sometimes" id="forgetOpioid-sometimes" value="Sometimes">
+
+                <label for="forgetOpioid">Never</label>
+                <input type="radio" name="forgetOpioid-never" id="forgetOpioid-never" value="Never" checked="checked">
             </fieldset>
             </div>
 
+            
+            
             <div data-role="fieldcontain">
-                <label for="question-2">Question 2</label>
-                <textarea cols="40" rows="8" name="question-2" id="question-2"></textarea>
+            <fieldset data-role="controlgroup" id="emptyEarly">
+                <legend>Do you seem to run out of medication early?</legend>
+
+                <label for="emptyEarly">Yes</label>
+                <input type="radio" name="emptyEarly-yes" id="emptyEarly-yes" value="Yes">
+
+                <label for="emptyEarly">Sometimes</label>
+                <input type="radio" name="emptyEarly-sometimes" id="emptyEarly-sometimes" value="Sometimes">
+
+                <label for="emptyEarly">Never</label>
+                <input type="radio" name="emptyEarly-never" id="emptyEarly-never" value="Never" checked="checked">
+            </fieldset>
             </div>
-
-            <div data-role="fieldcontain">
-                <label for="question-3">Question 3</label>
-                <textarea cols="40" rows="8" name="question-3" id="question-3"></textarea>
-            </div>
-
-            <div data-role="fieldcontain">
-                <label for="question-4">Question 4</label>
-                <textarea cols="40" rows="8" name="question-4" id="question-4"></textarea>
-            </div>
-
-            <div data-role="fieldcontain">
-                <label for="question-5">Question 5</label>
-                <textarea cols="40" rows="8" name="question-5" id="question-5"></textarea>
-            </div>
-
-
-
+            
+    
 
             <div class="ui-body ui-body-b">
             <fieldset class="ui-grid-a">
-                <div class="ui-block"><button type="submit" >Submit</button></div>
+                <div class="ui-block"><button type="submit" id="opioidSurveySelectBtn" onclick="opioidSurveySubmit()">Submit</button></div>
             </fieldset>
             </div>
             
         </form><!-- End Pain Med Nonadherence Survey -->
-        </div><!--/content-adherance Surveys -->		
+        </div><!--/content-opioid non adherance Surveys -->
+
+        
+        
+        <script>
+            
+            function sendToSruvey(){
+                
+                
+                
+            }
+            
+            function generalSurveySubmit(){
+                // create array to store survey data
+                var surveyArray = new Array[];
+                // add med name
+                surveyArray.push(sessionStorage.getItem('medication'));
+                // add date/Time
+                surveyArray.push(new Date());
+                
+                // get data from fields, validate, add to array
+                $('#generalSurvey').validate({
+                    rules: {
+                        awareMissed: {
+                            required: true
+                        },
+                        reason: {
+                            required: true
+                        },
+                        sideEffects: {
+                            required: true
+                        },
+                        forgetChoice: {
+                            required: true
+                        },
+                        carelessChoice: {
+                            required: true
+                        },
+                        feelWorse: {
+                            required: true
+                        },
+                        forgotWeek: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        awareMissed: {
+                            required: "Please check YES or NO."
+                        },
+                        reason: {
+                            required: "Please enter your reason."
+                        },
+                        sideEffects: {
+                            required: "Please enter your sideffects or type none."
+                        },
+                        forgetChoice: {
+                            required: "Please select a choice."
+                        },
+                        carelessChoice: {
+                            required: "Please select a choice."
+                        },
+                        feelWorse: {
+                            required: "Please select a choice."
+                        },
+                        forgotWeek: {
+                            required: "Please select a choice."
+                        }
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parent().prev());
+                    },
+                    // BELOW MIGHT BE *WRONG*
+                    submitHandler: function (form) {
+                        $(':mobile-pagecontainer').pagecontainer('change', '#success', {
+                            reload: false
+                        });
+                        return false;
+                    }
+                });// end validate form
+                
+                // turn into json and send (or) attach to user
+                var surveyResults = 'genSurveyResults: ';
+                surveyResults += $('generalSurvey').serialize();
+                surveyArray.push(surveyResults);
+                
+                
+                // save survey to local storage
+                localStorage.setItem('Survey', surveyArray);
+                
+                // if opioid, send to next survey page
+                var isOpioid =  sessionStorage.getItem('opioid');
+                
+                // send to opioid survey page if opioid
+                if(isOpioid){
+                    window.location = '#opioidSurveyPage';
+                }else{
+                    //return to main page
+                    window.location = '#homepage';
+                }
+                
+            }// end general survey submit funtion
+            
+            
+            
+            
+            
+            
+            function opioidSurveySubmit(){
+                var storedSurvey = new Array[];
+                storedSurvey = sessionStorage.getItem('Survey');
+                
+                // get data from fields, validate
+                                // get data from fields, validate, add to array
+                $('#generalSurvey').validate({
+                    rules: {
+                        painLevelNow: {
+                            required: true
+                        },
+                        painLevel24h: {
+                            required: true
+                        },
+                        painLevelWeek: {
+                            required: true
+                        },
+                        addictWorries: {
+                            required: true
+                        },
+                        forgetOpioid: {
+                            required: true
+                        },
+                        emptyEarly: {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        painLevelNow: {
+                            required: "Please slect a value."
+                        },
+                        painLevel24h: {
+                            required: "Please slect a value."
+                        },
+                        painLevelWeek: {
+                            required: "Please slect a value."
+                        },
+                        addictWorries: {
+                            required: "Please slect a value."
+                        },
+                        forgetOpioid: {
+                            required: "Please slect a value."
+                        },
+                        emptyEarly: {
+                            required: "Please slect a value."
+                        }
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parent().prev());
+                    },
+                    // BELOW MIGHT BE *WRONG*
+                    submitHandler: function (form) {
+                        $(':mobile-pagecontainer').pagecontainer('change', '#success', {
+                            reload: false
+                        });
+                        return false;
+                    }
+                });// end validate form
+                
+                
+                
+                
+                
+                // turn into json and send (or) attach to user
+                var opioidSurveyResults = 'opioidSurveyResults: ';
+                surveyResults += $('opioidSurvey').serialize();
+                surveyArray.push(surveyResults);
+                
+                // return to main page
+                window.location = '#homepage';
+
+            }// end opioid survey submit function
+            
+
+        </script>
+		
 	</body>
 </html>
