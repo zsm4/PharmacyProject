@@ -604,7 +604,8 @@ Created by: Elias Dowling-Huppert
 				<a data-role="button" id="viewMedications" href="#medicationPage" class="button" >View Medications</a>
 				<a data-role="button" id="addMedication" href="#addMedPage" class="button" >Add New Medication</a>
 				<a data-role="button" id="removeMedication" href="#removeMedPage" class="button">Remove Medication</a>
-				<a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>		
+				<a data-role="button" id="surveyButton" href="#surveyPage" class="button">Survey Page</a>
+                <a data-role="button" id="opioidButton" href="#opioidSurveyPage" class="button">Opioid Survey Page</a>	
 			</div>    
 		</div>
 		
@@ -743,29 +744,35 @@ Created by: Elias Dowling-Huppert
 			</div>
 
 			<form style="padding:1%">
-				<div data-role="fieldcontain">
-					<label for="slider2">Do you know that you have not taken your medication?</label>
-					<select name="slider2" id="slider2" data-role="slider">
-					<option value="yes">Yes</option>
-					<option value="no">No</option>
-				</select>
-				</div>
+                <div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<legend>Do you know that you have not taken your medication?</legend>
 
+					<input type="radio" name="userAware" id="userAware-no" value="no">
+					<label for="userAware-no">No</label>
+					
+					<input type="radio" name="userAware" id="userAware-yes" value="yes">
+					<label for="userAware-yes">Yes</label>
+				</fieldset>
+				</div>
+                
+                
 				<div data-role="fieldcontain">
-					<label for="reason">What is Your Reason?</label>
+					<label for="reason">If yes, what is Your reason?</label>
 					<input type="text" name="reason" id="reason" value=""  />
 				</div>
 
 				<div data-role="fieldcontain">
 					<label for="sideEffects">Are There Side Effects That Bother You?</label>
-					<textarea cols="40" rows="8" name="sideEffects" id="sideEffects"></textarea>
+					<input type="text" name="sideEffects" id="sideEffects" value="" />
 				</div>
 
 				<div data-role="fieldcontain">
 				<fieldset data-role="controlgroup">
 					<legend>Do you ever forget to take your medicine?</legend>
 					
-					<input type="radio" name="forget-choice" id="forget-choice-1" value="on" checked="checked">
+
+					<input type="radio" name="forget-choice" id="forget-choice-1" value="Yes">
 					<label for="forget-choice-1">Yes</label>
 					
 					<input type="radio" name="forget-choice" id="forget-choice-2" value="Sometimes">
@@ -783,13 +790,13 @@ Created by: Elias Dowling-Huppert
 					<legend>Are you careless at times about taking your medicine?</legend>
 
 					<label for="careless-choice-1">Yes</label>
-					<input type="radio" name="careless-choice-1" id="careless-choice-1" value="Yes">
+					<input type="radio" name="careless-choice" id="careless-choice-1" value="Yes">
 
 					<label for="careless-choice-2">Sometimes</label>
-					<input type="radio" name="careless-choice-2" id="careless-choice-2" value="Sometimes">
+					<input type="radio" name="careless-choice" id="careless-choice-2" value="Sometimes">
 
 					<label for="careless-choice-3">Never</label>
-					<input type="radio" name="careless-choice-3" id="careless-choice-3" value="Never" checked="checked">
+					<input type="radio" name="careless-choice" id="careless-choice-3" value="Never">
 				</fieldset>
 				</div>
 
@@ -799,13 +806,13 @@ Created by: Elias Dowling-Huppert
 					<legend> Sometimes if you feel worse, do you stop taking your medicines?</legend>
 
 
-					<input type="radio" name="feelWorse-choice-1" id="feelWorse-choice-1" value="Yes" checked="checked">
+					<input type="radio" name="feelWorse-choice" id="feelWorse-choice-1" value="Yes">
 					<label for="feelWorse-choice-1">Yes</label>
 
-					<input type="radio" name="feelWorse-choice-2" id="feelWorse-choice-2" value="Sometimes">
+					<input type="radio" name="feelWorse-choice" id="feelWorse-choice-2" value="Sometimes">
 					<label for="feelWorse-choice-2">Sometimes</label>
 
-					<input type="radio" name="feelWorse-choice-3" id="feelWorse-choice-3" value="Never">
+					<input type="radio" name="feelWorse-choice" id="feelWorse-choice-3" value="Never">
 					<label for="feelWorse-choice-3">Never</label>
 				</fieldset>
 				</div>
@@ -816,19 +823,19 @@ Created by: Elias Dowling-Huppert
 					your medicine?</legend>
 
 					<label for="notTaken-choice-0">Never</label>
-					<input type="radio" name="notTaken-choice-0" id="notTaken-choice-0" value="Never" checked="checked">
+					<input type="radio" name="notTaken-choice" id="notTaken-choice-0" value="Never">
 
 					<label for="notTaken-choice-1">1-2 Times</label>
-					<input type="radio" name="notTaken-choice-1" id="notTaken-choice-1" value="1-2 Times" checked="checked">
+					<input type="radio" name="notTaken-choice" id="notTaken-choice-1" value="1-2 Times">
 
 					<label for="notTaken-choice-2">3-5 Times</label>
-					<input type="radio" name="notTaken-choice-2" id="notTaken-choice-2" value="3-5 Times">
+					<input type="radio" name="notTaken-choice" id="notTaken-choice-2" value="3-5 Times">
 
 					<label for="notTaken-choice-3">6-10 Times</label>
-					<input type="radio" name="notTaken-choice-3" id="notTaken-choice-3" value="6-10 Times">
+					<input type="radio" name="notTaken-choice" id="notTaken-choice-3" value="6-10 Times">
 
 					<label for="notTaken-choice-4">Over 10 Times</label>
-					<input type="radio" name="notTaken-choice-4" id="notTaken-choice-4" value="Over 10 Times">
+					<input type="radio" name="notTaken-choice" id="notTaken-choice-4" value="Over 10 Times">
 
 				</fieldset>
 				</div>
@@ -851,7 +858,7 @@ Created by: Elias Dowling-Huppert
               <h1>Pain Medication Specific Survey</h1>
           </div>
 
-        <form id="opioidSurvey">
+        <form id="opioidSurvey"  style="padding:1%">
             <br><br>
             
             <div data-role="fieldcontain">
@@ -876,14 +883,14 @@ Created by: Elias Dowling-Huppert
                 <fieldset data-role="controlgroup" id="addictWorries">
                 <legend>Are you affraid of becoming addicted to you medication?</legend>
 
-                <label for="addictWorries">Yes</label>
-                <input type="radio" name="addictWorries-yes" id="addictWorries-yes" value="Yes">
+                <label for="addictWorries-yes">Yes</label>
+                <input type="radio" name="addictWorries" id="addictWorries-yes" value="Yes">
 
-                <label for="addictWorries">Sometimes</label>
-                <input type="radio" name="addictWorries-sometimes" id="addictWorries-sometimes" value="Sometimes">
+                <label for="addictWorries-sometimes">Sometimes</label>
+                <input type="radio" name="addictWorries" id="addictWorries-sometimes" value="Sometimes">
 
-                <label for="addictWorries">Never</label>
-                <input type="radio" name="addictWorries-never" id="addictWorries-never" value="Never" checked="checked">
+                <label for="addictWorries-never">Never</label>
+                <input type="radio" name="addictWorries" id="addictWorries-never" value="Never">
             </fieldset>
             </div>
             
@@ -893,14 +900,14 @@ Created by: Elias Dowling-Huppert
                 <fieldset data-role="controlgroup" id="forgetOpioid">
                 <legend>When you are feeling better do you forget to take your medication?</legend>
 
-                <label for="forgetOpioid">Yes</label>
-                <input type="radio" name="forgetOpioid-yes" id="forgetOpioid-yes" value="Yes">
+                <label for="forgetOpioid-yes">Yes</label>
+                <input type="radio" name="forgetOpioid" id="forgetOpioid-yes" value="Yes">
 
-                <label for="forgetOpioid">Sometimes</label>
-                <input type="radio" name="forgetOpioid-sometimes" id="forgetOpioid-sometimes" value="Sometimes">
+                <label for="forgetOpioid-sometimes">Sometimes</label>
+                <input type="radio" name="forgetOpioid" id="forgetOpioid-sometimes" value="Sometimes">
 
-                <label for="forgetOpioid">Never</label>
-                <input type="radio" name="forgetOpioid-never" id="forgetOpioid-never" value="Never" checked="checked">
+                <label for="forgetOpioid-never">Never</label>
+                <input type="radio" name="forgetOpioid" id="forgetOpioid-never" value="Never">
             </fieldset>
             </div>
 
@@ -911,14 +918,15 @@ Created by: Elias Dowling-Huppert
             <fieldset data-role="controlgroup" id="emptyEarly">
                 <legend>Do you seem to run out of medication early?</legend>
 
-                <label for="emptyEarly">Yes</label>
+
+                <label for="emptyEarly-yes">Yes</label>
                 <input type="radio" name="emptyEarly" id="emptyEarly-yes" value="Yes">
               
-              <label for="emptyEarly">Sometimes</label>
+              <label for="emptyEarly-sometimes">Sometimes</label>
                 <input type="radio" name="emptyEarly" id="emptyEarly-sometimes" value="Sometimes">
 
-                <label for="emptyEarly">Never</label>
-                <input type="radio" name="emptyEarly" id="emptyEarly-never" value="Never" checked="checked">
+                <label for="emptyEarly-never">Never</label>
+                <input type="radio" name="emptyEarly" id="emptyEarly-never" value="Never">
             </fieldset>
             </div>
 			
