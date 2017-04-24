@@ -1,3 +1,6 @@
+1073 Final Pharmacy Project
+Group members: Sascha Rojtas, Adam O'Bryan, Elias Dowling-Huppert, Zach Martin
+
 This is everything that goes in the www part of the cordova file.
 
 To get up and running.
