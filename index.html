@@ -1,3 +1,11 @@
+<!--
+INFSCI 1073 Pharmacy Project
+Created by: Elias Dowling-Huppert
+			Sasch Rojtas
+			Adam O'Bryan
+			Zach Martin
+-->
+
 <!DOCTYPE=html>
 <html>
 	<head>
@@ -122,7 +130,7 @@
                                 //Set med opioid status to session storage
                                 sessionStorage.setItem('opioid', medIsOpioid);
                                 // send to survey page after missing 3 times
-                               window.location = '#surveyPage';
+                                window.location = '#surveyPage';
 
 								// if medication is a pain med
 							}
@@ -757,14 +765,14 @@
 				<fieldset data-role="controlgroup">
 					<legend>Do you ever forget to take your medicine?</legend>
 					
-					<input type="radio" name="forget-choice-1" id="forget-choice-1" value="on" checked="checked">
+					<input type="radio" name="forget-choice" id="forget-choice-1" value="on" checked="checked">
 					<label for="forget-choice-1">Yes</label>
 					
-					<input type="radio" name="forget-choice-2" id="forget-choice-2" value="Sometimes">
+					<input type="radio" name="forget-choice" id="forget-choice-2" value="Sometimes">
 					<label for="forget-choice-2">Sometimes</label>
 
 
-					<input type="radio" name="forget-choice-3" id="forget-choice-3" value="Never">
+					<input type="radio" name="forget-choice" id="forget-choice-3" value="Never">
 					<label for="forget-choice-3">Never</label>
 				</fieldset>
 				</div>
@@ -904,13 +912,13 @@
                 <legend>Do you seem to run out of medication early?</legend>
 
                 <label for="emptyEarly">Yes</label>
-                <input type="radio" name="emptyEarly-yes" id="emptyEarly-yes" value="Yes">
+                <input type="radio" name="emptyEarly" id="emptyEarly-yes" value="Yes">
               
               <label for="emptyEarly">Sometimes</label>
-                <input type="radio" name="emptyEarly-sometimes" id="emptyEarly-sometimes" value="Sometimes">
+                <input type="radio" name="emptyEarly" id="emptyEarly-sometimes" value="Sometimes">
 
                 <label for="emptyEarly">Never</label>
-                <input type="radio" name="emptyEarly-never" id="emptyEarly-never" value="Never" checked="checked">
+                <input type="radio" name="emptyEarly" id="emptyEarly-never" value="Never" checked="checked">
             </fieldset>
             </div>
 			
