@@ -1,3 +1,11 @@
+<!--
+INFSCI 1073 Pharmacy Project
+Created by: Elias Dowling-Huppert
+			Sasch Rojtas
+			Adam O'Bryan
+			Zach Martin
+-->
+
 <!DOCTYPE=html>
 <html>
 	<head>
@@ -122,7 +130,7 @@
                                 //Set med opioid status to session storage
                                 sessionStorage.setItem('opioid', medIsOpioid);
                                 // send to survey page after missing 3 times
-                               window.location = '#surveyPage';
+                                window.location = '#surveyPage';
 
 								// if medication is a pain med
 							}
@@ -763,6 +771,7 @@
 				<fieldset data-role="controlgroup">
 					<legend>Do you ever forget to take your medicine?</legend>
 					
+
 					<input type="radio" name="forget-choice" id="forget-choice-1" value="Yes">
 					<label for="forget-choice-1">Yes</label>
 					
@@ -908,6 +917,7 @@
             <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" id="emptyEarly">
                 <legend>Do you seem to run out of medication early?</legend>
+
 
                 <label for="emptyEarly-yes">Yes</label>
                 <input type="radio" name="emptyEarly" id="emptyEarly-yes" value="Yes">
